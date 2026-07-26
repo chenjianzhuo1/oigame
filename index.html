@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OI 生涯 · 赛季赛制</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="game-container" id="app">
+    <!-- 菜单遮罩 -->
+    <div class="menu-overlay" id="menuOverlay">
+        <div class="menu-box">
+            <h2>🧑‍💻 OI 生涯</h2>
+            <p>模拟高中三年信息学竞赛生涯<br>赛季赛制 · 多结局 · 策略养成</p>
+            <button class="start-btn" id="startGameBtn">🚀 开始生涯</button>
+        </div>
+    </div>
+
+    <h1>
+        🧑‍💻 OI 生涯 · 赛季赛制
+        <small>高一 → 高三</small>
+        <button class="theme-toggle" id="themeToggle" title="切换明暗主题">🌓</button>
+    </h1>
+
+    <div class="status-panel">
+        <div class="stat"><span class="label">❤️</span> <span id="hpDisplay">100</span></div>
+        <div class="stat"><span class="label">📚</span> <span id="knowledgeDisplay">0</span></div>
+        <div class="stat"><span class="label">🏅</span> <span id="medalDisplay">0</span></div>
+        <div class="stat"><span class="label">💪</span> <span id="moraleDisplay">80</span></div>
+        <div class="year-badge" id="yearDisplay">高一</div>
+        <div class="season-indicator" id="seasonDisplay">📅 赛季 · 待定</div>
+    </div>
+
+    <div class="main-area">
+        <div class="action-grid">
+            <button class="action-btn btn-train" id="trainBtn">📖 训练 <span class="sub">+知识 · 耗精力</span></button>
+            <button class="action-btn btn-contest" id="contestBtn">⚔️ 比赛 <span class="sub">常规赛 · 赢奖牌</span></button>
+            <button class="action-btn btn-rest" id="restBtn">😴 休息 <span class="sub">恢复精力 & 士气</span></button>
+            <button class="action-btn btn-research" id="researchBtn">🔬 研究 <span class="sub">消耗精力 · 大量知识</span></button>
+            <button class="action-btn btn-social" id="socialBtn">🤝 社交 <span class="sub">提升士气 · 少量知识</span></button>
+            <button class="action-btn btn-special" id="specialBtn">🏆 赛季大赛 <span class="sub">CSP / NOIP / 省选 / NOI ...</span></button>
+            <button class="action-btn btn-reset" id="resetBtn">🔄 重新开始</button>
+        </div>
+
+        <div class="log-area" id="logArea">
+            <p>🌟 欢迎来到 OI 生涯 · 赛季赛制</p>
+            <p>📌 每个赛季有专属大赛：CSP → NOIP → 省选 → NOI → 冬/夏令营 → IOI ...</p>
+            <p>⚡ 合理训练，把握赛季节点，冲击更高荣誉！</p>
+        </div>
+
+        <div id="gameOverMsg" class="game-over-msg" style="display: none;"></div>
+        <div class="footer-hint">
+            <span>⏱️ 每回合消耗时间</span>
+            <span id="turnCounter">第 1 回合</span>
+        </div>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
