@@ -21,25 +21,99 @@
     });
 
     // ============================================================
-    //  2. 菜单控制
+    //  2. 人物配置
     // ============================================================
-    const menuOverlay = document.getElementById('menuOverlay');
-    const startGameBtn = document.getElementById('startGameBtn');
-    let gameStarted = false;
-
-    function showMenu() {
-        menuOverlay.classList.remove('hidden');
-        gameStarted = false;
-        startGameBtn.disabled = false;
-    }
-
-    function hideMenu() {
-        menuOverlay.classList.add('hidden');
-        gameStarted = true;
-    }
+    const CHARACTERS = {
+        coder: {
+            id: 'coder',
+            name: '💻 代码狂人',
+            desc: '代码能力极强，思维稍弱',
+            stats: {
+                codeBonus: 1.3,
+                thinkingBonus: 0.85,
+                money: 400,
+                morale: 70,
+                hp: 100,
+            },
+            detail: '📚 代码: +30% | 🧠 思维: -15% | 💰 初始金钱: 400'
+        },
+        thinker: {
+            id: 'thinker',
+            name: '🧠 思维大师',
+            desc: '思维敏锐，代码稍弱',
+            stats: {
+                codeBonus: 0.85,
+                thinkingBonus: 1.3,
+                money: 500,
+                morale: 85,
+                hp: 90,
+            },
+            detail: '🧠 思维: +30% | 📚 代码: -15% | 💰 初始金钱: 500'
+        },
+        balanced: {
+            id: 'balanced',
+            name: '⚖️ 均衡选手',
+            desc: '各方面均衡发展',
+            stats: {
+                codeBonus: 1.0,
+                thinkingBonus: 1.0,
+                money: 600,
+                morale: 80,
+                hp: 100,
+            },
+            detail: '所有属性均衡 | 💰 初始金钱: 600 | ❤️ 精力: 100'
+        },
+        lucky: {
+            id: 'lucky',
+            name: '🍀 幸运儿',
+            desc: '运气好，但基础稍弱',
+            stats: {
+                codeBonus: 0.9,
+                thinkingBonus: 0.9,
+                money: 300,
+                morale: 90,
+                hp: 95,
+                luckyBonus: 2,
+            },
+            detail: '🍀 幸运: +2 奖牌 | 💰 初始金钱: 300 | 💪 士气: 90'
+        }
+    };
 
     // ============================================================
-    //  3. 知识等级系统
+    //  3. 难度配置
+    // ============================================================
+    const DIFFICULTIES = {
+        easy: {
+            id: 'easy',
+            label: '🌱 简单',
+            maxTurn: 60,
+            initialMoney: 600,
+            hpDecay: 0.7,
+            costMod: 0.7,
+            expMod: 1.3,
+        },
+        normal: {
+            id: 'normal',
+            label: '⚡ 普通',
+            maxTurn: 55,
+            initialMoney: 500,
+            hpDecay: 1.0,
+            costMod: 1.0,
+            expMod: 1.0,
+        },
+        hard: {
+            id: 'hard',
+            label: '🔥 困难',
+            maxTurn: 45,
+            initialMoney: 350,
+            hpDecay: 1.4,
+            costMod: 1.3,
+            expMod: 0.8,
+        }
+    };
+
+    // ============================================================
+    //  4. 知识等级系统
     // ============================================================
     const LEVELS = [
         { id: 'E', label: 'E', value: 0, threshold: 0 },
@@ -75,7 +149,7 @@
     }
 
     // ============================================================
-    //  4. 知识领域配置
+    //  5. 知识领域配置
     // ============================================================
     const KNOWLEDGE_DOMAINS = [
         { id: 'math', name: '数学' },
@@ -91,7 +165,7 @@
     ];
 
     // ============================================================
-    //  5. 赛季配置
+    //  6. 赛季配置
     // ============================================================
     const SEASON_CONFIG = [
         { year: 0, startTurn: 1, endTurn: 18, name: '高一赛季', events: [
@@ -129,56 +203,105 @@
     }
 
     // ============================================================
-    //  6. 天赋系统
+    //  7. 天赋系统
     // ============================================================
     const TALENTS = [
-        { id: 'genius', name: '天才', desc: '知识获取 +30%', type: 'good', effect: (s) => { s.talentBonus = 1.3; } },
-        { id: 'diligent', name: '勤奋', desc: '训练消耗 -20%', type: 'good', effect: (s) => { s.trainCostMod = 0.8; } },
-        { id: 'lucky', name: '幸运', desc: '比赛奖牌 +1', type: 'good', effect: (s) => { s.luckyBonus = 1; } },
-        { id: 'focused', name: '专注', desc: '研究效率 +25%', type: 'good', effect: (s) => { s.focusMod = 1.25; } },
-        { id: 'steady', name: '稳扎稳打', desc: '训练额外 +10% 经验', type: 'good', effect: (s) => { s.steadyBonus = 1.1; } },
-        { id: 'stress', name: '焦虑', desc: '精力消耗 +20%', type: 'bad', effect: (s) => { s.stressMod = 1.2; } },
-        { id: 'distracted', name: '分心', desc: '知识获取 -20%', type: 'bad', effect: (s) => { s.distractedMod = 0.8; } },
-        { id: 'lazy', name: '懒惰', desc: '行动费用 +30%', type: 'bad', effect: (s) => { s.lazyMod = 1.3; } },
-        { id: 'impatient', name: '急躁', desc: '比赛成功率 -15%', type: 'bad', effect: (s) => { s.impatientMod = 0.85; } },
+        { id: 'genius', name: '天才', desc: '知识获取 +30%', type: 'good' },
+        { id: 'diligent', name: '勤奋', desc: '训练消耗 -20%', type: 'good' },
+        { id: 'lucky', name: '幸运', desc: '比赛奖牌 +1', type: 'good' },
+        { id: 'focused', name: '专注', desc: '研究效率 +25%', type: 'good' },
+        { id: 'steady', name: '稳扎稳打', desc: '训练额外 +10% 经验', type: 'good' },
+        { id: 'stress', name: '焦虑', desc: '精力消耗 +20%', type: 'bad' },
+        { id: 'distracted', name: '分心', desc: '知识获取 -20%', type: 'bad' },
+        { id: 'lazy', name: '懒惰', desc: '行动费用 +30%', type: 'bad' },
+        { id: 'impatient', name: '急躁', desc: '比赛成功率 -15%', type: 'bad' },
     ];
 
+    function applyTalentEffects(s) {
+        s.talentBonus = 1.0;
+        s.trainCostMod = 1.0;
+        s.luckyBonus = 0;
+        s.stressMod = 1.0;
+        s.distractedMod = 1.0;
+        s.lazyMod = 1.0;
+        s.focusMod = 1.0;
+        s.impatientMod = 1.0;
+        s.steadyBonus = 1.0;
+
+        for (const t of s.talents) {
+            switch (t.id) {
+                case 'genius': s.talentBonus = 1.3; break;
+                case 'diligent': s.trainCostMod = 0.8; break;
+                case 'lucky': s.luckyBonus = 1; break;
+                case 'focused': s.focusMod = 1.25; break;
+                case 'steady': s.steadyBonus = 1.1; break;
+                case 'stress': s.stressMod = 1.2; break;
+                case 'distracted': s.distractedMod = 0.8; break;
+                case 'lazy': s.lazyMod = 1.3; break;
+                case 'impatient': s.impatientMod = 0.85; break;
+            }
+        }
+    }
+
     // ============================================================
-    //  7. 游戏状态
+    //  8. 游戏状态
     // ============================================================
-    const state = {
-        hp: 100,
-        morale: 80,
-        medal: 0,
-        money: 500,
-        year: 0,
-        turn: 1,
-        gameOver: false,
-        maxTurn: 55,
-        yearLabels: ['高一', '高二', '高三'],
-        knowledge: KNOWLEDGE_DOMAINS.map(d => ({ id: d.id, name: d.name, exp: 0 })),
-        talents: [],
-        talentBonus: 1.0,
-        trainCostMod: 1.0,
-        luckyBonus: 0,
-        stressMod: 1.0,
-        distractedMod: 1.0,
-        lazyMod: 1.0,
-        focusMod: 1.0,
-        impatientMod: 1.0,
-        steadyBonus: 1.0,
-        totalTrain: 0,
-        totalContest: 0,
-        totalRest: 0,
-        totalResearch: 0,
-        totalSocial: 0,
-        totalAwaken: 0,
-        endingTriggered: false,
-        triggeredEvents: new Set(),
-        contestInProgress: false,
-        contestProgress: 0,
-        easterEggs: [],
-    };
+    let state = {};
+    let difficulty = 'normal';
+    let character = 'balanced';
+
+    function initState() {
+        const charData = CHARACTERS[character];
+        const diffData = DIFFICULTIES[difficulty];
+
+        state = {
+            hp: charData.stats.hp || 100,
+            morale: charData.stats.morale || 80,
+            medal: 0,
+            money: diffData.initialMoney || charData.stats.money || 500,
+            year: 0,
+            turn: 1,
+            gameOver: false,
+            maxTurn: diffData.maxTurn || 55,
+            yearLabels: ['高一', '高二', '高三'],
+            knowledge: KNOWLEDGE_DOMAINS.map(d => ({ id: d.id, name: d.name, exp: 0 })),
+            talents: [],
+            talentBonus: 1.0,
+            trainCostMod: 1.0,
+            luckyBonus: charData.stats.luckyBonus || 0,
+            stressMod: 1.0,
+            distractedMod: 1.0,
+            lazyMod: 1.0,
+            focusMod: 1.0,
+            impatientMod: 1.0,
+            steadyBonus: 1.0,
+            totalTrain: 0,
+            totalContest: 0,
+            totalRest: 0,
+            totalResearch: 0,
+            totalSocial: 0,
+            totalAwaken: 0,
+            endingTriggered: false,
+            triggeredEvents: new Set(),
+            contestInProgress: false,
+            contestProgress: 0,
+            easterEggs: [],
+            // 难度/人物参数
+            diffId: difficulty,
+            charId: character,
+            hpDecay: diffData.hpDecay || 1.0,
+            costMod: diffData.costMod || 1.0,
+            expMod: diffData.expMod || 1.0,
+            codeBonus: charData.stats.codeBonus || 1.0,
+            thinkingBonus: charData.stats.thinkingBonus || 1.0,
+        };
+        // 给知识领域添加人物加成
+        for (const k of state.knowledge) {
+            if (k.id === 'code') k.bonus = state.codeBonus;
+            else if (k.id === 'thinking') k.bonus = state.thinkingBonus;
+            else k.bonus = 1.0;
+        }
+    }
 
     function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
 
@@ -206,8 +329,8 @@
         if (hasTalent(id)) return false;
         const talent = TALENTS.find(t => t.id === id);
         if (!talent) return false;
-        state.talents.push(talent);
-        talent.effect(state);
+        state.talents.push({ ...talent });
+        applyTalentEffects(state);
         return true;
     }
 
@@ -215,24 +338,12 @@
         const idx = state.talents.findIndex(t => t.id === id);
         if (idx === -1) return false;
         state.talents.splice(idx, 1);
-        // 重置加成
-        state.talentBonus = 1.0;
-        state.trainCostMod = 1.0;
-        state.luckyBonus = 0;
-        state.stressMod = 1.0;
-        state.distractedMod = 1.0;
-        state.lazyMod = 1.0;
-        state.focusMod = 1.0;
-        state.impatientMod = 1.0;
-        state.steadyBonus = 1.0;
-        for (const t of state.talents) {
-            t.effect(state);
-        }
+        applyTalentEffects(state);
         return true;
     }
 
     // ============================================================
-    //  8. 彩蛋系统
+    //  9. 彩蛋系统
     // ============================================================
     const EASTER_EGGS = [
         { id: 'egg1', msg: '🥚 你发现了一本上古神书《算法导论》，知识 +10！', trigger: () => Math.random() < 0.03, effect: (s) => { s.knowledge.forEach(k => k.exp += 10); } },
@@ -256,7 +367,7 @@
     }
 
     // ============================================================
-    //  9. DOM 缓存
+    //  10. DOM 缓存
     // ============================================================
     const hpDisplay = document.getElementById('hpDisplay');
     const moneyDisplay = document.getElementById('moneyDisplay');
@@ -283,7 +394,7 @@
     const resetBtn = document.getElementById('resetBtn');
 
     // ============================================================
-    //  10. UI 更新
+    //  11. UI 更新
     // ============================================================
     function updateUI() {
         hpDisplay.textContent = clamp(state.hp, 0, 100);
@@ -383,33 +494,34 @@
     }
 
     // ============================================================
-    //  11. 模态框系统
+    //  12. 模态框系统（支持多选）
     // ============================================================
-    function showModal(title, subtitle, options, onSubmit, onCancel) {
+    function showModal(title, subtitle, options, onSubmit, onCancel, multiSelect = false) {
         const overlay = document.createElement('div');
         overlay.className = 'modal-overlay';
         overlay.id = 'activeModal';
 
         let optionsHTML = '';
-        let selectedValues = [];
-
         for (const opt of options) {
             const checked = opt.default ? 'selected' : '';
+            const badge = opt.badge ? `<span class="badge ${opt.badge}">${opt.badgeText || ''}</span>` : '';
             optionsHTML += `
                 <div class="modal-option ${checked}" data-value="${opt.value}" data-cost="${opt.cost || 0}">
-                    <span>${opt.label}</span>
+                    <span>${opt.label} ${badge}</span>
                     <span class="desc">${opt.desc || ''}</span>
                     ${opt.cost !== undefined ? `<span class="cost">💰 ${opt.cost}</span>` : ''}
-                    <span class="check">✅</span>
+                    <span class="check">${multiSelect ? '☑️' : '✅'}</span>
                 </div>
             `;
         }
+
+        const multiHint = multiSelect ? '<span style="font-size:12px;opacity:0.6;">💡 点击选择多个天赋，再次点击取消选择</span>' : '';
 
         overlay.innerHTML = `
             <div class="modal-content">
                 <button class="modal-close" id="modalClose">✕</button>
                 <div class="modal-title">${title}</div>
-                <div class="modal-subtitle">${subtitle}</div>
+                <div class="modal-subtitle">${subtitle} ${multiHint}</div>
                 <div class="modal-options" id="modalOptions">
                     ${optionsHTML}
                 </div>
@@ -422,17 +534,22 @@
 
         modalContainer.appendChild(overlay);
 
-        // 选项点击
         const optionEls = overlay.querySelectorAll('.modal-option');
-        optionEls.forEach(el => {
-            el.addEventListener('click', function() {
-                // 单选：清除其他选中
-                optionEls.forEach(o => o.classList.remove('selected'));
-                this.classList.add('selected');
+        if (multiSelect) {
+            optionEls.forEach(el => {
+                el.addEventListener('click', function() {
+                    this.classList.toggle('selected');
+                });
             });
-        });
+        } else {
+            optionEls.forEach(el => {
+                el.addEventListener('click', function() {
+                    optionEls.forEach(o => o.classList.remove('selected'));
+                    this.classList.add('selected');
+                });
+            });
+        }
 
-        // 关闭
         function closeModal() {
             if (overlay.parentNode) overlay.remove();
         }
@@ -444,18 +561,23 @@
         });
 
         overlay.querySelector('#modalSubmit').addEventListener('click', function() {
-            const selected = overlay.querySelector('.modal-option.selected');
-            if (!selected) {
-                addLog('⚠️ 请选择一个选项', 'danger');
+            const selected = overlay.querySelectorAll('.modal-option.selected');
+            if (selected.length === 0) {
+                addLog('⚠️ 请至少选择一个选项', 'danger');
                 return;
             }
-            const value = selected.dataset.value;
-            const cost = parseInt(selected.dataset.cost) || 0;
+            const results = [];
+            let totalCost = 0;
+            selected.forEach(el => {
+                const value = el.dataset.value;
+                const cost = parseInt(el.dataset.cost) || 0;
+                results.push({ value, cost });
+                totalCost += cost;
+            });
             closeModal();
-            if (onSubmit) onSubmit(value, cost);
+            if (onSubmit) onSubmit(results, totalCost);
         });
 
-        // 点击背景关闭
         overlay.addEventListener('click', function(e) {
             if (e.target === this) {
                 closeModal();
@@ -465,7 +587,7 @@
     }
 
     // ============================================================
-    //  12. 比赛过程模拟
+    //  13. 比赛过程模拟
     // ============================================================
     function simulateContest(contestName, callback) {
         if (state.contestInProgress) return;
@@ -493,7 +615,7 @@
     }
 
     // ============================================================
-    //  13. 年级晋升
+    //  14. 年级晋升
     // ============================================================
     function checkYearUpgrade() {
         if (state.year >= 2) return;
@@ -509,7 +631,7 @@
     }
 
     // ============================================================
-    //  14. 评分系统
+    //  15. 评分系统
     // ============================================================
     function calculateScore() {
         const { medal, money, morale, totalTrain, totalContest, totalResearch, totalSocial, totalRest, totalAwaken } = state;
@@ -560,8 +682,10 @@
         const ending = getEnding();
         const { grade, label, emoji } = ending.grade;
         const totalExp = getTotalExp();
+        const charName = CHARACTERS[state.charId]?.name || '选手';
         gameOverMsg.innerHTML = `
             <div class="ending-title">${ending.title}</div>
+            <div style="margin-top:4px;font-size:14px;opacity:0.8;">👤 ${charName} · ${DIFFICULTIES[state.diffId]?.label || ''}</div>
             <div style="margin-top:6px;">${ending.desc}</div>
             <div style="margin-top:8px;font-size:18px;font-weight:600;">
                 ${emoji} 评分：${grade} (${label}) — ${ending.score} 分
@@ -584,18 +708,21 @@
     }
 
     // ============================================================
-    //  15. 核心行动
+    //  16. 核心行动
     // ============================================================
     function getCost(base) {
-        let cost = base * state.lazyMod;
+        let cost = base * state.lazyMod * state.costMod;
         return Math.round(cost);
+    }
+
+    function getExpMod() {
+        return state.expMod;
     }
 
     // ----- 训练（选择题目） -----
     function actionTrain() {
         if (state.gameOver || state.contestInProgress || !gameStarted) return;
         
-        // 构建知识选项
         const options = state.knowledge.map(k => ({
             value: k.id,
             label: k.name,
@@ -607,24 +734,26 @@
             '📖 选择训练题目',
             '选择要重点提升的知识领域 (每次训练消耗 $30)',
             options,
-            function(value, cost) {
+            function(results, totalCost) {
+                const result = results[0];
+                const cost = result.cost;
                 if (state.money < cost) { addLog('❌ 金钱不足！', 'danger'); return; }
                 if (state.hp < 10) { addLog('❌ 精力不足！', 'danger'); return; }
 
                 state.money -= cost;
-                state.hp = clamp(state.hp - 6 * state.stressMod, 0, 100);
+                state.hp = clamp(state.hp - 6 * state.stressMod * state.hpDecay, 0, 100);
                 state.morale = clamp(state.morale - 2, 0, 100);
                 state.totalTrain++;
 
-                const target = state.knowledge.find(k => k.id === value);
+                const target = state.knowledge.find(k => k.id === result.value);
+                const bonus = target.bonus || 1.0;
                 const baseGain = Math.floor(Math.random() * 8 + 5);
-                const gain = Math.floor(baseGain * state.talentBonus * state.steadyBonus * (1 - (state.distractedMod - 1) * 0.5));
+                const gain = Math.floor(baseGain * state.talentBonus * state.steadyBonus * bonus * getExpMod() * (1 - (state.distractedMod - 1) * 0.5));
                 target.exp += gain;
 
                 const lv = getLevel(target.exp);
                 addLog(`📖 训练 ${target.name} +${gain} 经验 → ${lv.label} (💰-${cost})`, 'knowledge-up');
 
-                // 训练中随机觉醒天赋
                 if (Math.random() < 0.05) {
                     const talent = TALENTS[Math.floor(Math.random() * TALENTS.length)];
                     if (talent.type === 'good' && !hasTalent(talent.id)) {
@@ -652,32 +781,35 @@
             '🔬 选择研究强度',
             '研究消耗精力与金钱，全面提升各知识点',
             options,
-            function(value, cost) {
+            function(results, totalCost) {
+                const result = results[0];
+                const cost = result.cost;
                 if (state.money < cost) { addLog('❌ 金钱不足！', 'danger'); return; }
                 if (state.hp < 15) { addLog('❌ 精力不足！', 'danger'); return; }
 
                 state.money -= cost;
-                const hpCost = value === 'light' ? 8 : value === 'medium' ? 14 : 22;
-                state.hp = clamp(state.hp - hpCost * state.stressMod, 0, 100);
-                state.morale = clamp(state.morale - (value === 'light' ? 2 : value === 'medium' ? 4 : 6), 0, 100);
+                const hpCost = result.value === 'light' ? 8 : result.value === 'medium' ? 14 : 22;
+                state.hp = clamp(state.hp - hpCost * state.stressMod * state.hpDecay, 0, 100);
+                state.morale = clamp(state.morale - (result.value === 'light' ? 2 : result.value === 'medium' ? 4 : 6), 0, 100);
                 state.totalResearch++;
 
-                const baseGain = value === 'light' ? Math.floor(Math.random() * 10 + 8) : 
-                                 value === 'medium' ? Math.floor(Math.random() * 18 + 14) : 
+                const baseGain = result.value === 'light' ? Math.floor(Math.random() * 10 + 8) : 
+                                 result.value === 'medium' ? Math.floor(Math.random() * 18 + 14) : 
                                  Math.floor(Math.random() * 28 + 20);
-                const gain = Math.floor(baseGain * state.talentBonus * state.focusMod * (1 - (state.distractedMod - 1) * 0.3));
+                const gain = Math.floor(baseGain * state.talentBonus * state.focusMod * getExpMod() * (1 - (state.distractedMod - 1) * 0.3));
                 
                 for (const k of state.knowledge) {
-                    k.exp += Math.floor(gain / state.knowledge.length);
+                    const bonus = k.bonus || 1.0;
+                    k.exp += Math.floor(gain / state.knowledge.length * bonus);
                 }
                 const extra = Math.floor(Math.random() * 5) + 2;
                 const d = state.knowledge[Math.floor(Math.random() * state.knowledge.length)];
                 d.exp += extra;
 
-                const label = value === 'light' ? '轻度' : value === 'medium' ? '中度' : '重度';
+                const label = result.value === 'light' ? '轻度' : result.value === 'medium' ? '中度' : '重度';
                 addLog(`🔬 ${label}研究 +${gain} 总经验，${d.name} +${extra} (💰-${cost})`, 'knowledge-up');
 
-                if (Math.random() < (value === 'light' ? 0.05 : value === 'medium' ? 0.10 : 0.18)) {
+                if (Math.random() < (result.value === 'light' ? 0.05 : result.value === 'medium' ? 0.10 : 0.18)) {
                     const talent = TALENTS[Math.floor(Math.random() * TALENTS.length)];
                     if (talent.type === 'good' && !hasTalent(talent.id)) {
                         if (addTalent(talent.id)) {
@@ -690,13 +822,11 @@
         );
     }
 
-    // ----- 觉醒天赋（选择天赋） -----
+    // ----- 觉醒天赋（多选） -----
     function actionAwaken() {
         if (state.gameOver || state.contestInProgress || !gameStarted) return;
-        if (state.money < 100) { addLog('❌ 金钱不足！需要至少 $100', 'danger'); return; }
         if (state.hp < 20) { addLog('❌ 精力不足 (需要 ≥20)！', 'danger'); return; }
 
-        // 可用天赋（未拥有的）
         const available = TALENTS.filter(t => !hasTalent(t.id));
         if (available.length === 0) {
             addLog('✨ 你已拥有所有天赋！', 'highlight');
@@ -706,36 +836,44 @@
         const options = available.map(t => ({
             value: t.id,
             label: t.name,
-            desc: `${t.desc} (${t.type === 'good' ? '✅ 好天赋' : '⚠️ 坏天赋'})`,
-            cost: 100
+            desc: t.desc,
+            cost: 100,
+            badge: t.type === 'good' ? 'good' : 'bad',
+            badgeText: t.type === 'good' ? '✅ 好' : '⚠️ 坏'
         }));
 
         showModal(
             '✨ 选择要觉醒的天赋',
-            '每个天赋 $100，成功率 40%，可多次尝试',
+            '每个天赋 $100，成功率 40%，可多选',
             options,
-            function(value, cost) {
-                if (state.money < cost) { addLog('❌ 金钱不足！', 'danger'); return; }
+            function(results, totalCost) {
+                if (state.money < totalCost) { addLog(`❌ 金钱不足！需要 $${totalCost}`, 'danger'); return; }
                 if (state.hp < 20) { addLog('❌ 精力不足！', 'danger'); return; }
 
-                state.money -= cost;
-                state.hp = clamp(state.hp - 8, 0, 100);
-                state.totalAwaken++;
+                state.money -= totalCost;
+                state.hp = clamp(state.hp - 8 * results.length, 0, 100);
+                state.totalAwaken += results.length;
 
-                const success = Math.random() < 0.40;
-                if (success) {
-                    const talent = TALENTS.find(t => t.id === value);
-                    if (addTalent(talent.id)) {
-                        addLog(`✨ 觉醒成功！获得天赋：${talent.name} — ${talent.desc}`, 'talent');
-                    } else {
-                        addLog('⚠️ 觉醒失败，金钱退还 $50', 'danger');
-                        state.money += 50;
+                let successCount = 0;
+                for (const r of results) {
+                    const success = Math.random() < 0.40;
+                    if (success) {
+                        const talent = TALENTS.find(t => t.id === r.value);
+                        if (addTalent(talent.id)) {
+                            successCount++;
+                            addLog(`✨ 觉醒成功！获得天赋：${talent.name}`, 'talent');
+                        }
                     }
+                }
+                if (successCount === 0) {
+                    addLog('💔 所有天赋觉醒失败... 继续努力！', 'danger');
                 } else {
-                    addLog('💔 觉醒失败... 继续努力！', 'danger');
+                    addLog(`🎉 成功觉醒 ${successCount} 个天赋！`, 'success');
                 }
                 advanceTurn();
-            }
+            },
+            null,
+            true // 多选
         );
     }
 
@@ -747,7 +885,7 @@
 
         state.money -= cost;
         simulateContest('常规赛', () => {
-            state.hp = clamp(state.hp - 10 * state.stressMod, 0, 100);
+            state.hp = clamp(state.hp - 10 * state.stressMod * state.hpDecay, 0, 100);
             state.morale = clamp(state.morale - 3, 0, 100);
             state.totalContest++;
 
@@ -844,7 +982,7 @@
         state.money -= cost;
 
         simulateContest(event.name, () => {
-            state.hp = clamp(state.hp - 14 * state.stressMod, 0, 100);
+            state.hp = clamp(state.hp - 14 * state.stressMod * state.hpDecay, 0, 100);
             state.morale = clamp(state.morale - 2, 0, 100);
 
             const excess = totalExp - event.knowledgeReq;
@@ -859,7 +997,8 @@
 
             const knowledgeBoost = Math.floor(medalGain * 4) + 5;
             for (const k of state.knowledge) {
-                k.exp += Math.floor(knowledgeBoost / state.knowledge.length);
+                const bonus2 = k.bonus || 1.0;
+                k.exp += Math.floor(knowledgeBoost / state.knowledge.length * bonus2);
             }
 
             addLog(`🏆 ${event.name} 完成！获得 ${medalGain} 奖牌，金钱 +${medalGain*30}`, 'contest');
@@ -869,7 +1008,7 @@
     }
 
     // ============================================================
-    //  16. 回合推进
+    //  17. 回合推进
     // ============================================================
     function advanceTurn() {
         if (state.gameOver) return;
@@ -878,7 +1017,7 @@
 
         if (state.hp > 0) {
             const decay = Math.floor(Math.random() * 3) + 1;
-            state.hp = clamp(state.hp - decay, 0, 100);
+            state.hp = clamp(state.hp - decay * state.hpDecay, 0, 100);
             if (state.hp < 20 && state.hp > 0 && !state.gameOver) {
                 addLog(`⚠️ 精力偏低 (${state.hp})，注意休息`, 'danger');
             }
@@ -911,7 +1050,6 @@
             return;
         }
 
-        // 特殊事件（随机）
         if (state.turn % 4 === 0 && !state.gameOver && gameStarted) {
             const event = triggerSpecialEvent();
             if (event) {
@@ -920,12 +1058,10 @@
             updateUI();
         }
 
-        // 彩蛋检查
         if (state.turn % 3 === 0 && !state.gameOver && gameStarted) {
             checkEasterEgg();
         }
 
-        // 赛季事件提醒
         if (!state.gameOver && gameStarted) {
             const upcoming = getCurrentSeasonEvents(state.turn, state.year);
             if (upcoming.length > 0 && !state.triggeredEvents.has(state.turn)) {
@@ -942,10 +1078,10 @@
     }
 
     // ============================================================
-    //  17. 特殊事件
+    //  18. 特殊事件
     // ============================================================
     const SPECIAL_EVENTS = [
-        { type: 'good', weight: 20, msg: '📚 发现珍贵资料，随机知识 +5', effect: (s) => { const d = s.knowledge[Math.floor(Math.random() * s.knowledge.length)]; d.exp += 5; } },
+        { type: 'good', weight: 20, msg: '📚 发现珍贵资料，随机知识 +5', effect: (s) => { const d = s.knowledge[Math.floor(Math.random() * s.knowledge.length)]; d.exp += 5 * s.expMod; } },
         { type: 'good', weight: 15, msg: '💪 体能训练，精力 +12', effect: (s) => { s.hp = clamp(s.hp + 12, 0, 100); } },
         { type: 'good', weight: 15, msg: '🎯 学长分享经验，士气 +10', effect: (s) => { s.morale = clamp(s.morale + 10, 0, 100); } },
         { type: 'good', weight: 10, msg: '🌟 天赋觉醒！获得随机天赋', effect: (s) => { 
@@ -957,19 +1093,19 @@
             }
         }},
         { type: 'good', weight: 8, msg: '💎 捡到钱袋，金钱 +80', effect: (s) => { s.money += 80; } },
-        { type: 'bad', weight: 20, msg: '😷 感冒了，精力 -8', effect: (s) => { s.hp = clamp(s.hp - 8, 0, 100); } },
+        { type: 'bad', weight: 20, msg: '😷 感冒了，精力 -8', effect: (s) => { s.hp = clamp(s.hp - 8 * s.hpDecay, 0, 100); } },
         { type: 'bad', weight: 15, msg: '😤 被老师批评，士气 -10', effect: (s) => { s.morale = clamp(s.morale - 10, 0, 100); } },
         { type: 'bad', weight: 12, msg: '📉 遇到难题，随机知识 -3', effect: (s) => { const d = s.knowledge[Math.floor(Math.random() * s.knowledge.length)]; d.exp = Math.max(0, d.exp - 3); } },
-        { type: 'bad', weight: 10, msg: '💤 睡眠不足，精力 -5，士气 -5', effect: (s) => { s.hp = clamp(s.hp - 5, 0, 100); s.morale = clamp(s.morale - 5, 0, 100); } },
+        { type: 'bad', weight: 10, msg: '💤 睡眠不足，精力 -5，士气 -5', effect: (s) => { s.hp = clamp(s.hp - 5 * s.hpDecay, 0, 100); s.morale = clamp(s.morale - 5, 0, 100); } },
         { type: 'bad', weight: 8, msg: '🌀 天赋消除！失去一个随机天赋', effect: (s) => {
-            const goodTalents = state.talents.filter(t => t.type === 'good');
+            const goodTalents = s.talents.filter(t => t.type === 'good');
             if (goodTalents.length > 0) {
                 const t = goodTalents[Math.floor(Math.random() * goodTalents.length)];
                 removeTalent(t.id);
                 addLog(`💔 失去天赋：${t.name}`, 'danger');
             }
         }},
-        { type: 'mixed', weight: 12, msg: '⚖️ 精力 -3，随机知识 +4', effect: (s) => { s.hp = clamp(s.hp - 3, 0, 100); const d = s.knowledge[Math.floor(Math.random() * s.knowledge.length)]; d.exp += 4; } },
+        { type: 'mixed', weight: 12, msg: '⚖️ 精力 -3，随机知识 +4', effect: (s) => { s.hp = clamp(s.hp - 3 * s.hpDecay, 0, 100); const d = s.knowledge[Math.floor(Math.random() * s.knowledge.length)]; d.exp += 4 * s.expMod; } },
         { type: 'mixed', weight: 8, msg: '🎭 心情波动：士气 -5，金钱 +50', effect: (s) => { s.morale = clamp(s.morale - 5, 0, 100); s.money += 50; } },
     ];
 
@@ -986,37 +1122,66 @@
     }
 
     // ============================================================
-    //  18. 重置游戏
+    //  19. 菜单交互
+    // ============================================================
+    let gameStarted = false;
+    let selectedDifficulty = 'normal';
+    let selectedCharacter = 'balanced';
+
+    function setupMenu() {
+        // 难度选择
+        const diffOptions = document.querySelectorAll('#difficultyOptions .menu-option');
+        diffOptions.forEach(el => {
+            el.addEventListener('click', function() {
+                diffOptions.forEach(o => o.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedDifficulty = this.dataset.value;
+                updateCharacterDetail();
+            });
+        });
+
+        // 人物选择
+        const charOptions = document.querySelectorAll('#characterOptions .menu-option');
+        charOptions.forEach(el => {
+            el.addEventListener('click', function() {
+                charOptions.forEach(o => o.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedCharacter = this.dataset.value;
+                updateCharacterDetail();
+            });
+        });
+
+        updateCharacterDetail();
+    }
+
+    function updateCharacterDetail() {
+        const char = CHARACTERS[selectedCharacter];
+        const detailEl = document.getElementById('characterDetail');
+        if (char) {
+            detailEl.innerHTML = `
+                <div class="detail-name">${char.name}</div>
+                <div class="detail-desc">${char.desc}</div>
+                <div class="detail-stats">
+                    <span>📚 代码: ${char.stats.codeBonus >= 1 ? '+' : ''}${Math.round((char.stats.codeBonus - 1) * 100)}%</span>
+                    <span>🧠 思维: ${char.stats.thinkingBonus >= 1 ? '+' : ''}${Math.round((char.stats.thinkingBonus - 1) * 100)}%</span>
+                    <span>💰 初始金钱: ${char.stats.money}</span>
+                    ${char.stats.luckyBonus ? `<span>🍀 幸运: +${char.stats.luckyBonus}</span>` : ''}
+                    <span>💪 士气: ${char.stats.morale}</span>
+                </div>
+                <div style="font-size:12px;opacity:0.6;margin-top:4px;">
+                    🎯 难度: ${DIFFICULTIES[selectedDifficulty]?.label || '普通'}
+                </div>
+            `;
+        }
+    }
+
+    // ============================================================
+    //  20. 重置游戏
     // ============================================================
     function resetGame() {
-        state.hp = 100;
-        state.morale = 80;
-        state.medal = 0;
-        state.money = 500;
-        state.year = 0;
-        state.turn = 1;
-        state.gameOver = false;
-        state.endingTriggered = false;
-        state.knowledge = KNOWLEDGE_DOMAINS.map(d => ({ id: d.id, name: d.name, exp: 0 }));
-        state.talents = [];
-        state.talentBonus = 1.0;
-        state.trainCostMod = 1.0;
-        state.luckyBonus = 0;
-        state.stressMod = 1.0;
-        state.distractedMod = 1.0;
-        state.lazyMod = 1.0;
-        state.focusMod = 1.0;
-        state.impatientMod = 1.0;
-        state.steadyBonus = 1.0;
-        state.totalTrain = 0;
-        state.totalContest = 0;
-        state.totalRest = 0;
-        state.totalResearch = 0;
-        state.totalSocial = 0;
-        state.totalAwaken = 0;
-        state.triggeredEvents = new Set();
-        state.contestInProgress = false;
-        state.easterEggs = [];
+        difficulty = selectedDifficulty;
+        character = selectedCharacter;
+        initState();
 
         logArea.innerHTML = '';
         gameOverMsg.style.display = 'none';
@@ -1031,9 +1196,28 @@
     }
 
     // ============================================================
-    //  19. 初始化
+    //  21. 菜单控制
+    // ============================================================
+    const menuOverlay = document.getElementById('menuOverlay');
+    const startGameBtn = document.getElementById('startGameBtn');
+
+    function showMenu() {
+        menuOverlay.classList.remove('hidden');
+        gameStarted = false;
+        startGameBtn.disabled = false;
+    }
+
+    function hideMenu() {
+        menuOverlay.classList.add('hidden');
+        gameStarted = true;
+    }
+
+    // ============================================================
+    //  22. 初始化
     // ============================================================
     function init() {
+        setupMenu();
+
         trainBtn.addEventListener('click', actionTrain);
         contestBtn.addEventListener('click', actionContest);
         restBtn.addEventListener('click', actionRest);
@@ -1044,17 +1228,21 @@
         resetBtn.addEventListener('click', resetGame);
 
         startGameBtn.addEventListener('click', function() {
-            resetGame();
+            difficulty = selectedDifficulty;
+            character = selectedCharacter;
+            initState();
             hideMenu();
             gameStarted = true;
             state.gameOver = false;
 
+            const charName = CHARACTERS[character]?.name || '选手';
+            const diffLabel = DIFFICULTIES[difficulty]?.label || '普通';
             logArea.innerHTML = '';
-            addLog('🧑‍💻 OI 生涯模拟器 v2.0', 'highlight');
-            addLog('⏱️ 55 回合 (约 12-15 分钟)');
+            addLog(`🧑‍💻 ${charName} · ${diffLabel} 模式开始！`, 'highlight');
+            addLog(`⏱️ ${state.maxTurn} 回合 (约 ${Math.round(state.maxTurn * 0.2)} 分钟)`);
             addLog('📖 训练可选择题目针对性提升');
             addLog('🔬 科研分轻/中/重度，消耗不同');
-            addLog('✨ 觉醒可选择天赋，每个 $100，成功率 40%');
+            addLog('✨ 觉醒可多选天赋，每个 $100，成功率 40%');
 
             [trainBtn, contestBtn, restBtn, researchBtn, socialBtn, specialBtn, awakenBtn].forEach(btn => {
                 btn.disabled = false;
