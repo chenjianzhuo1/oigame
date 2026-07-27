@@ -27,15 +27,14 @@
         coder: {
             id: 'coder',
             name: '💻 代码狂人',
-            desc: '代码能力极强，思维稍弱',
+            desc: '代码能力极强，但思维稍弱',
             stats: {
                 codeBonus: 1.3,
                 thinkingBonus: 0.85,
                 money: 400,
                 morale: 70,
                 hp: 100,
-            },
-            detail: '📚 代码: +30% | 🧠 思维: -15% | 💰 初始金钱: 400'
+            }
         },
         thinker: {
             id: 'thinker',
@@ -47,8 +46,7 @@
                 money: 500,
                 morale: 85,
                 hp: 90,
-            },
-            detail: '🧠 思维: +30% | 📚 代码: -15% | 💰 初始金钱: 500'
+            }
         },
         balanced: {
             id: 'balanced',
@@ -60,8 +58,7 @@
                 money: 600,
                 morale: 80,
                 hp: 100,
-            },
-            detail: '所有属性均衡 | 💰 初始金钱: 600 | ❤️ 精力: 100'
+            }
         },
         lucky: {
             id: 'lucky',
@@ -74,8 +71,7 @@
                 morale: 90,
                 hp: 95,
                 luckyBonus: 2,
-            },
-            detail: '🍀 幸运: +2 奖牌 | 💰 初始金钱: 300 | 💪 士气: 90'
+            }
         }
     };
 
@@ -247,12 +243,12 @@
     //  8. 游戏状态
     // ============================================================
     let state = {};
-    let difficulty = 'normal';
-    let character = 'balanced';
+    let selectedDifficulty = 'normal';
+    let selectedCharacter = 'balanced';
 
     function initState() {
-        const charData = CHARACTERS[character];
-        const diffData = DIFFICULTIES[difficulty];
+        const charData = CHARACTERS[selectedCharacter];
+        const diffData = DIFFICULTIES[selectedDifficulty];
 
         state = {
             hp: charData.stats.hp || 100,
@@ -286,16 +282,14 @@
             contestInProgress: false,
             contestProgress: 0,
             easterEggs: [],
-            // 难度/人物参数
-            diffId: difficulty,
-            charId: character,
+            diffId: selectedDifficulty,
+            charId: selectedCharacter,
             hpDecay: diffData.hpDecay || 1.0,
             costMod: diffData.costMod || 1.0,
             expMod: diffData.expMod || 1.0,
             codeBonus: charData.stats.codeBonus || 1.0,
             thinkingBonus: charData.stats.thinkingBonus || 1.0,
         };
-        // 给知识领域添加人物加成
         for (const k of state.knowledge) {
             if (k.id === 'code') k.bonus = state.codeBonus;
             else if (k.id === 'thinking') k.bonus = state.thinkingBonus;
@@ -396,6 +390,8 @@
     // ============================================================
     //  11. UI 更新
     // ============================================================
+    let gameStarted = false;
+
     function updateUI() {
         hpDisplay.textContent = clamp(state.hp, 0, 100);
         moneyDisplay.textContent = state.money;
@@ -683,9 +679,10 @@
         const { grade, label, emoji } = ending.grade;
         const totalExp = getTotalExp();
         const charName = CHARACTERS[state.charId]?.name || '选手';
+        const diffLabel = DIFFICULTIES[state.diffId]?.label || '';
         gameOverMsg.innerHTML = `
             <div class="ending-title">${ending.title}</div>
-            <div style="margin-top:4px;font-size:14px;opacity:0.8;">👤 ${charName} · ${DIFFICULTIES[state.diffId]?.label || ''}</div>
+            <div style="margin-top:4px;font-size:14px;opacity:0.8;">👤 ${charName} · ${diffLabel}</div>
             <div style="margin-top:6px;">${ending.desc}</div>
             <div style="margin-top:8px;font-size:18px;font-weight:600;">
                 ${emoji} 评分：${grade} (${label}) — ${ending.score} 分
@@ -719,7 +716,6 @@
         return state.expMod;
     }
 
-    // ----- 训练（选择题目） -----
     function actionTrain() {
         if (state.gameOver || state.contestInProgress || !gameStarted) return;
         
@@ -767,7 +763,6 @@
         );
     }
 
-    // ----- 科研（轻/中/重度） -----
     function actionResearch() {
         if (state.gameOver || state.contestInProgress || !gameStarted) return;
 
@@ -822,7 +817,6 @@
         );
     }
 
-    // ----- 觉醒天赋（多选） -----
     function actionAwaken() {
         if (state.gameOver || state.contestInProgress || !gameStarted) return;
         if (state.hp < 20) { addLog('❌ 精力不足 (需要 ≥20)！', 'danger'); return; }
@@ -873,11 +867,10 @@
                 advanceTurn();
             },
             null,
-            true // 多选
+            true
         );
     }
 
-    // ----- 其他行动 -----
     function actionContest() {
         if (state.gameOver || state.contestInProgress || !gameStarted) return;
         const cost = getCost(50);
@@ -1124,15 +1117,12 @@
     // ============================================================
     //  19. 菜单交互
     // ============================================================
-    let gameStarted = false;
-    let selectedDifficulty = 'normal';
-    let selectedCharacter = 'balanced';
-
     function setupMenu() {
         // 难度选择
         const diffOptions = document.querySelectorAll('#difficultyOptions .menu-option');
         diffOptions.forEach(el => {
-            el.addEventListener('click', function() {
+            el.addEventListener('click', function(e) {
+                e.stopPropagation();
                 diffOptions.forEach(o => o.classList.remove('selected'));
                 this.classList.add('selected');
                 selectedDifficulty = this.dataset.value;
@@ -1143,7 +1133,8 @@
         // 人物选择
         const charOptions = document.querySelectorAll('#characterOptions .menu-option');
         charOptions.forEach(el => {
-            el.addEventListener('click', function() {
+            el.addEventListener('click', function(e) {
+                e.stopPropagation();
                 charOptions.forEach(o => o.classList.remove('selected'));
                 this.classList.add('selected');
                 selectedCharacter = this.dataset.value;
@@ -1158,18 +1149,20 @@
         const char = CHARACTERS[selectedCharacter];
         const detailEl = document.getElementById('characterDetail');
         if (char) {
+            const diff = DIFFICULTIES[selectedDifficulty];
+            const stats = char.stats;
             detailEl.innerHTML = `
                 <div class="detail-name">${char.name}</div>
                 <div class="detail-desc">${char.desc}</div>
                 <div class="detail-stats">
-                    <span>📚 代码: ${char.stats.codeBonus >= 1 ? '+' : ''}${Math.round((char.stats.codeBonus - 1) * 100)}%</span>
-                    <span>🧠 思维: ${char.stats.thinkingBonus >= 1 ? '+' : ''}${Math.round((char.stats.thinkingBonus - 1) * 100)}%</span>
-                    <span>💰 初始金钱: ${char.stats.money}</span>
-                    ${char.stats.luckyBonus ? `<span>🍀 幸运: +${char.stats.luckyBonus}</span>` : ''}
-                    <span>💪 士气: ${char.stats.morale}</span>
+                    <span>📚 代码: ${stats.codeBonus >= 1 ? '+' : ''}${Math.round((stats.codeBonus - 1) * 100)}%</span>
+                    <span>🧠 思维: ${stats.thinkingBonus >= 1 ? '+' : ''}${Math.round((stats.thinkingBonus - 1) * 100)}%</span>
+                    <span>💰 初始金钱: ${stats.money}</span>
+                    ${stats.luckyBonus ? `<span>🍀 幸运: +${stats.luckyBonus}</span>` : ''}
+                    <span>💪 士气: ${stats.morale}</span>
                 </div>
                 <div style="font-size:12px;opacity:0.6;margin-top:4px;">
-                    🎯 难度: ${DIFFICULTIES[selectedDifficulty]?.label || '普通'}
+                    🎯 难度: ${diff ? diff.label : '普通'} · 回合: ${diff ? diff.maxTurn : 55}
                 </div>
             `;
         }
@@ -1179,8 +1172,6 @@
     //  20. 重置游戏
     // ============================================================
     function resetGame() {
-        difficulty = selectedDifficulty;
-        character = selectedCharacter;
         initState();
 
         logArea.innerHTML = '';
@@ -1228,15 +1219,13 @@
         resetBtn.addEventListener('click', resetGame);
 
         startGameBtn.addEventListener('click', function() {
-            difficulty = selectedDifficulty;
-            character = selectedCharacter;
             initState();
             hideMenu();
             gameStarted = true;
             state.gameOver = false;
 
-            const charName = CHARACTERS[character]?.name || '选手';
-            const diffLabel = DIFFICULTIES[difficulty]?.label || '普通';
+            const charName = CHARACTERS[selectedCharacter]?.name || '选手';
+            const diffLabel = DIFFICULTIES[selectedDifficulty]?.label || '普通';
             logArea.innerHTML = '';
             addLog(`🧑‍💻 ${charName} · ${diffLabel} 模式开始！`, 'highlight');
             addLog(`⏱️ ${state.maxTurn} 回合 (约 ${Math.round(state.maxTurn * 0.2)} 分钟)`);
