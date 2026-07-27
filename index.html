@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OI 生涯 · 天赋与金钱</title>
+    <title>OI生涯模拟器</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -12,14 +12,14 @@
     <!-- 菜单遮罩 -->
     <div class="menu-overlay" id="menuOverlay">
         <div class="menu-box">
-            <h2>🧑‍💻 OI 生涯</h2>
+            <h2>🧑‍💻 OI 生涯模拟器</h2>
             <p>模拟高中三年信息学竞赛生涯<br>知识强度 · 天赋系统 · 金钱系统 · 多结局</p>
             <button class="start-btn" id="startGameBtn">🚀 开始生涯</button>
         </div>
     </div>
 
     <h1>
-        🧑‍💻 OI 生涯 · 天赋与金钱
+        🧑‍💻 OI 生涯模拟器
         <small>高一 → 高三</small>
         <button class="theme-toggle" id="themeToggle" title="切换明暗主题">🌓</button>
     </h1>
@@ -39,13 +39,13 @@
 
     <div class="main-area">
         <div class="action-grid">
-            <button class="action-btn btn-train" id="trainBtn">📖 训练 <span class="sub">提升单项知识 ($30)</span></button>
+            <button class="action-btn btn-train" id="trainBtn">📖 训练 <span class="sub">选择题目针对性提升</span></button>
             <button class="action-btn btn-contest" id="contestBtn">⚔️ 比赛 <span class="sub">综合实力比拼 ($50)</span></button>
             <button class="action-btn btn-rest" id="restBtn">😴 休息 <span class="sub">恢复精力 & 士气</span></button>
-            <button class="action-btn btn-research" id="researchBtn">🔬 研究 <span class="sub">全面提升 ($80)</span></button>
+            <button class="action-btn btn-research" id="researchBtn">🔬 科研 <span class="sub">轻/中/重度研究</span></button>
             <button class="action-btn btn-social" id="socialBtn">🤝 社交 <span class="sub">提升士气 · 少量知识 ($40)</span></button>
             <button class="action-btn btn-special" id="specialBtn">🏆 赛季大赛 <span class="sub">CSP / NOIP / 省选 / NOI</span></button>
-            <button class="action-btn btn-awaken" id="awakenBtn">✨ 觉醒天赋 <span class="sub">40%成功率 ($100)</span></button>
+            <button class="action-btn btn-awaken" id="awakenBtn">✨ 觉醒天赋 <span class="sub">选择天赋 · 每个$100</span></button>
             <button class="action-btn btn-reset" id="resetBtn">🔄 重新开始</button>
         </div>
 
@@ -66,10 +66,13 @@
         </div>
 
         <div class="log-area" id="logArea">
-            <p>🌟 欢迎来到 OI 生涯 · 天赋与金钱系统</p>
-            <p>📌 每个知识点独立成长，从 E 到 U1SSS</p>
-            <p>⚡ 训练、研究、觉醒天赋，走向巅峰！</p>
+            <p>🌟 欢迎来到 OI 生涯模拟器</p>
+            <p>📌 训练可选择题目针对性提升知识点</p>
+            <p>⚡ 科研分轻/中/重度，觉醒可选择天赋！</p>
         </div>
+
+        <!-- 模态框容器 -->
+        <div id="modalContainer"></div>
 
         <div id="gameOverMsg" class="game-over-msg" style="display: none;"></div>
         <div class="footer-hint">

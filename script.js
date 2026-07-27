@@ -136,11 +136,11 @@
         { id: 'diligent', name: '勤奋', desc: '训练消耗 -20%', type: 'good', effect: (s) => { s.trainCostMod = 0.8; } },
         { id: 'lucky', name: '幸运', desc: '比赛奖牌 +1', type: 'good', effect: (s) => { s.luckyBonus = 1; } },
         { id: 'focused', name: '专注', desc: '研究效率 +25%', type: 'good', effect: (s) => { s.focusMod = 1.25; } },
+        { id: 'steady', name: '稳扎稳打', desc: '训练额外 +10% 经验', type: 'good', effect: (s) => { s.steadyBonus = 1.1; } },
         { id: 'stress', name: '焦虑', desc: '精力消耗 +20%', type: 'bad', effect: (s) => { s.stressMod = 1.2; } },
         { id: 'distracted', name: '分心', desc: '知识获取 -20%', type: 'bad', effect: (s) => { s.distractedMod = 0.8; } },
         { id: 'lazy', name: '懒惰', desc: '行动费用 +30%', type: 'bad', effect: (s) => { s.lazyMod = 1.3; } },
         { id: 'impatient', name: '急躁', desc: '比赛成功率 -15%', type: 'bad', effect: (s) => { s.impatientMod = 0.85; } },
-        { id: 'steady', name: '稳扎稳打', desc: '训练额外 +10% 经验', type: 'good', effect: (s) => { s.steadyBonus = 1.1; } },
     ];
 
     // ============================================================
@@ -177,7 +177,6 @@
         triggeredEvents: new Set(),
         contestInProgress: false,
         contestProgress: 0,
-        trainTarget: 0,
         easterEggs: [],
     };
 
@@ -226,15 +225,10 @@
         state.focusMod = 1.0;
         state.impatientMod = 1.0;
         state.steadyBonus = 1.0;
-        // 重新应用所有天赋
         for (const t of state.talents) {
             t.effect(state);
         }
         return true;
-    }
-
-    function getRandomTalent() {
-        return TALENTS[Math.floor(Math.random() * TALENTS.length)];
     }
 
     // ============================================================
@@ -246,7 +240,6 @@
         { id: 'egg3', msg: '🥚 一位神秘前辈出现，传授你"大力出奇迹"心法，士气 +20！', trigger: () => Math.random() < 0.02, effect: (s) => { s.morale = clamp(s.morale + 20, 0, 100); } },
         { id: 'egg4', msg: '🥚 你无意间发现了一个系统漏洞，获得 3 枚奖牌！', trigger: () => Math.random() < 0.015, effect: (s) => { s.medal += 3; } },
         { id: 'egg5', msg: '🥚 你遇到了传说中的"OI 之神"，所有知识 +5！', trigger: () => Math.random() < 0.01, effect: (s) => { s.knowledge.forEach(k => k.exp += 5); } },
-        { id: 'egg6', msg: '🥚 你在食堂捡到一张饭卡，金钱 +50！', trigger: () => Math.random() < 0.02, effect: (s) => { s.money += 50; } },
     ];
 
     function checkEasterEgg() {
@@ -263,49 +256,7 @@
     }
 
     // ============================================================
-    //  9. 特殊事件
-    // ============================================================
-    const SPECIAL_EVENTS = [
-        { type: 'good', weight: 20, msg: '📚 发现珍贵资料，随机知识 +5', effect: (s) => { const d = s.knowledge[Math.floor(Math.random() * s.knowledge.length)]; d.exp += 5; } },
-        { type: 'good', weight: 15, msg: '💪 体能训练，精力 +12', effect: (s) => { s.hp = clamp(s.hp + 12, 0, 100); } },
-        { type: 'good', weight: 15, msg: '🎯 学长分享经验，士气 +10', effect: (s) => { s.morale = clamp(s.morale + 10, 0, 100); } },
-        { type: 'good', weight: 10, msg: '🌟 天赋觉醒！获得随机天赋', effect: (s) => { 
-            const talent = getRandomTalent();
-            if (addTalent(talent.id)) {
-                addLog(`✨ 觉醒天赋：${talent.name} — ${talent.desc}`, 'talent');
-            }
-        }},
-        { type: 'good', weight: 8, msg: '💎 捡到钱袋，金钱 +80', effect: (s) => { s.money += 80; } },
-        { type: 'bad', weight: 20, msg: '😷 感冒了，精力 -8', effect: (s) => { s.hp = clamp(s.hp - 8, 0, 100); } },
-        { type: 'bad', weight: 15, msg: '😤 被老师批评，士气 -10', effect: (s) => { s.morale = clamp(s.morale - 10, 0, 100); } },
-        { type: 'bad', weight: 12, msg: '📉 遇到难题，随机知识 -3', effect: (s) => { const d = s.knowledge[Math.floor(Math.random() * s.knowledge.length)]; d.exp = Math.max(0, d.exp - 3); } },
-        { type: 'bad', weight: 10, msg: '💤 睡眠不足，精力 -5，士气 -5', effect: (s) => { s.hp = clamp(s.hp - 5, 0, 100); s.morale = clamp(s.morale - 5, 0, 100); } },
-        { type: 'bad', weight: 8, msg: '🌀 天赋消除！失去一个随机天赋', effect: (s) => {
-            const goodTalents = state.talents.filter(t => t.type === 'good');
-            if (goodTalents.length > 0) {
-                const t = goodTalents[Math.floor(Math.random() * goodTalents.length)];
-                removeTalent(t.id);
-                addLog(`💔 失去天赋：${t.name}`, 'danger');
-            }
-        }},
-        { type: 'mixed', weight: 12, msg: '⚖️ 精力 -3，随机知识 +4', effect: (s) => { s.hp = clamp(s.hp - 3, 0, 100); const d = s.knowledge[Math.floor(Math.random() * s.knowledge.length)]; d.exp += 4; } },
-        { type: 'mixed', weight: 8, msg: '🎭 心情波动：士气 -5，金钱 +50', effect: (s) => { s.morale = clamp(s.morale - 5, 0, 100); s.money += 50; } },
-    ];
-
-    let eventPool = [];
-    SPECIAL_EVENTS.forEach(e => {
-        for (let i = 0; i < e.weight; i++) eventPool.push(e);
-    });
-
-    function triggerSpecialEvent() {
-        if (Math.random() > 0.22) return null;
-        const event = eventPool[Math.floor(Math.random() * eventPool.length)];
-        event.effect(state);
-        return event;
-    }
-
-    // ============================================================
-    //  10. DOM 缓存
+    //  9. DOM 缓存
     // ============================================================
     const hpDisplay = document.getElementById('hpDisplay');
     const moneyDisplay = document.getElementById('moneyDisplay');
@@ -320,6 +271,7 @@
     const knowledgeList = document.getElementById('knowledgeList');
     const talentList = document.getElementById('talentList');
     const talentDisplay = document.getElementById('talentDisplay');
+    const modalContainer = document.getElementById('modalContainer');
 
     const trainBtn = document.getElementById('trainBtn');
     const contestBtn = document.getElementById('contestBtn');
@@ -331,7 +283,7 @@
     const resetBtn = document.getElementById('resetBtn');
 
     // ============================================================
-    //  11. UI 更新
+    //  10. UI 更新
     // ============================================================
     function updateUI() {
         hpDisplay.textContent = clamp(state.hp, 0, 100);
@@ -344,7 +296,6 @@
         turnCounter.textContent = `第 ${state.turn} 回合`;
         seasonDisplay.textContent = `📅 ${getCurrentSeasonName(state.year)}`;
 
-        // 天赋显示（顶部横幅）
         if (state.talents.length > 0) {
             talentDisplay.style.display = 'block';
             talentDisplay.innerHTML = '✨ 天赋：' + state.talents.map(t => `${t.name} (${t.desc})`).join(' | ');
@@ -357,7 +308,6 @@
             talentDisplay.style.display = 'none';
         }
 
-        // 知识列表
         knowledgeList.innerHTML = '';
         for (const k of state.knowledge) {
             const lv = getLevel(k.exp);
@@ -370,7 +320,6 @@
             knowledgeList.appendChild(div);
         }
 
-        // 天赋列表
         talentList.innerHTML = '';
         if (state.talents.length === 0) {
             const empty = document.createElement('div');
@@ -391,11 +340,9 @@
             }
         }
 
-        // 按钮状态
         const btns = [trainBtn, contestBtn, restBtn, researchBtn, socialBtn, specialBtn, awakenBtn];
         btns.forEach(btn => btn.disabled = state.gameOver || state.contestInProgress || !gameStarted);
 
-        // 特殊按钮
         if (!state.gameOver && !state.contestInProgress && gameStarted) {
             const events = getCurrentSeasonEvents(state.turn, state.year);
             const hasEvent = events.length > 0 && !state.triggeredEvents.has(state.turn);
@@ -415,7 +362,6 @@
                     specialBtn.innerHTML = `🏆 赛季大赛 <span class="sub">等待下一场...</span>`;
                 }
             }
-            awakenBtn.disabled = state.money < 100 || state.hp < 20;
         }
 
         if (state.gameOver) {
@@ -434,6 +380,88 @@
             logArea.removeChild(logArea.firstChild);
         }
         logArea.scrollTop = logArea.scrollHeight;
+    }
+
+    // ============================================================
+    //  11. 模态框系统
+    // ============================================================
+    function showModal(title, subtitle, options, onSubmit, onCancel) {
+        const overlay = document.createElement('div');
+        overlay.className = 'modal-overlay';
+        overlay.id = 'activeModal';
+
+        let optionsHTML = '';
+        let selectedValues = [];
+
+        for (const opt of options) {
+            const checked = opt.default ? 'selected' : '';
+            optionsHTML += `
+                <div class="modal-option ${checked}" data-value="${opt.value}" data-cost="${opt.cost || 0}">
+                    <span>${opt.label}</span>
+                    <span class="desc">${opt.desc || ''}</span>
+                    ${opt.cost !== undefined ? `<span class="cost">💰 ${opt.cost}</span>` : ''}
+                    <span class="check">✅</span>
+                </div>
+            `;
+        }
+
+        overlay.innerHTML = `
+            <div class="modal-content">
+                <button class="modal-close" id="modalClose">✕</button>
+                <div class="modal-title">${title}</div>
+                <div class="modal-subtitle">${subtitle}</div>
+                <div class="modal-options" id="modalOptions">
+                    ${optionsHTML}
+                </div>
+                <div class="modal-actions">
+                    <button class="modal-cancel" id="modalCancel">取消</button>
+                    <button class="modal-submit" id="modalSubmit">确认</button>
+                </div>
+            </div>
+        `;
+
+        modalContainer.appendChild(overlay);
+
+        // 选项点击
+        const optionEls = overlay.querySelectorAll('.modal-option');
+        optionEls.forEach(el => {
+            el.addEventListener('click', function() {
+                // 单选：清除其他选中
+                optionEls.forEach(o => o.classList.remove('selected'));
+                this.classList.add('selected');
+            });
+        });
+
+        // 关闭
+        function closeModal() {
+            if (overlay.parentNode) overlay.remove();
+        }
+
+        overlay.querySelector('#modalClose').addEventListener('click', closeModal);
+        overlay.querySelector('#modalCancel').addEventListener('click', function() {
+            closeModal();
+            if (onCancel) onCancel();
+        });
+
+        overlay.querySelector('#modalSubmit').addEventListener('click', function() {
+            const selected = overlay.querySelector('.modal-option.selected');
+            if (!selected) {
+                addLog('⚠️ 请选择一个选项', 'danger');
+                return;
+            }
+            const value = selected.dataset.value;
+            const cost = parseInt(selected.dataset.cost) || 0;
+            closeModal();
+            if (onSubmit) onSubmit(value, cost);
+        });
+
+        // 点击背景关闭
+        overlay.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+                if (onCancel) onCancel();
+            }
+        });
     }
 
     // ============================================================
@@ -542,7 +570,7 @@
                 🏅 ${state.medal} 奖牌 · 💰 ${state.money} 金钱 · 💪 ${state.morale} 士气 · 📊 ${getAvgLevel().label}
             </div>
             <div style="margin-top:2px;font-size:13px;opacity:0.8;">
-                训练${state.totalTrain} · 比赛${state.totalContest} · 研究${state.totalResearch} · 社交${state.totalSocial} · 休息${state.totalRest} · 觉醒${state.totalAwaken}
+                训练${state.totalTrain} · 比赛${state.totalContest} · 科研${state.totalResearch} · 社交${state.totalSocial} · 休息${state.totalRest} · 觉醒${state.totalAwaken}
             </div>
             <div style="margin-top:4px;font-size:12px;opacity:0.6;">
                 总经验 ${totalExp} · 天赋 ${state.talents.length} 个
@@ -563,43 +591,155 @@
         return Math.round(cost);
     }
 
+    // ----- 训练（选择题目） -----
     function actionTrain() {
         if (state.gameOver || state.contestInProgress || !gameStarted) return;
-        const cost = getCost(30);
-        if (state.money < cost) { addLog('❌ 金钱不足！', 'danger'); return; }
-        if (state.hp < 10) { addLog('❌ 精力不足，无法训练！', 'danger'); return; }
+        
+        // 构建知识选项
+        const options = state.knowledge.map(k => ({
+            value: k.id,
+            label: k.name,
+            desc: `当前: ${getLevel(k.exp).label}`,
+            cost: 30
+        }));
 
-        state.money -= cost;
-        state.hp = clamp(state.hp - 6 * state.stressMod, 0, 100);
-        state.morale = clamp(state.morale - 2, 0, 100);
-        state.totalTrain++;
+        showModal(
+            '📖 选择训练题目',
+            '选择要重点提升的知识领域 (每次训练消耗 $30)',
+            options,
+            function(value, cost) {
+                if (state.money < cost) { addLog('❌ 金钱不足！', 'danger'); return; }
+                if (state.hp < 10) { addLog('❌ 精力不足！', 'danger'); return; }
 
-        let target = state.trainTarget % state.knowledge.length;
-        const baseGain = Math.floor(Math.random() * 8 + 5);
-        const gain = Math.floor(baseGain * state.talentBonus * state.steadyBonus * (1 - (state.distractedMod - 1) * 0.5));
-        state.knowledge[target].exp += gain;
-        state.trainTarget++;
+                state.money -= cost;
+                state.hp = clamp(state.hp - 6 * state.stressMod, 0, 100);
+                state.morale = clamp(state.morale - 2, 0, 100);
+                state.totalTrain++;
 
-        const lv = getLevel(state.knowledge[target].exp);
-        addLog(`📖 训练 ${state.knowledge[target].name} +${gain} 经验 → ${lv.label} (💰-${cost})`, 'knowledge-up');
+                const target = state.knowledge.find(k => k.id === value);
+                const baseGain = Math.floor(Math.random() * 8 + 5);
+                const gain = Math.floor(baseGain * state.talentBonus * state.steadyBonus * (1 - (state.distractedMod - 1) * 0.5));
+                target.exp += gain;
 
-        // 训练中随机觉醒/消除天赋
-        if (Math.random() < 0.06) {
-            const talent = getRandomTalent();
-            if (talent.type === 'good' && !hasTalent(talent.id)) {
-                if (addTalent(talent.id)) {
-                    addLog(`✨ 训练中觉醒天赋：${talent.name}！`, 'talent');
+                const lv = getLevel(target.exp);
+                addLog(`📖 训练 ${target.name} +${gain} 经验 → ${lv.label} (💰-${cost})`, 'knowledge-up');
+
+                // 训练中随机觉醒天赋
+                if (Math.random() < 0.05) {
+                    const talent = TALENTS[Math.floor(Math.random() * TALENTS.length)];
+                    if (talent.type === 'good' && !hasTalent(talent.id)) {
+                        if (addTalent(talent.id)) {
+                            addLog(`✨ 训练中觉醒天赋：${talent.name}！`, 'talent');
+                        }
+                    }
                 }
-            } else if (talent.type === 'bad' && hasTalent(talent.id)) {
-                if (removeTalent(talent.id)) {
-                    addLog(`💪 训练中消除负面天赋：${talent.name}！`, 'success');
-                }
+                advanceTurn();
             }
-        }
-
-        advanceTurn();
+        );
     }
 
+    // ----- 科研（轻/中/重度） -----
+    function actionResearch() {
+        if (state.gameOver || state.contestInProgress || !gameStarted) return;
+
+        const options = [
+            { value: 'light', label: '🌱 轻度研究', desc: '消耗少，收益低', cost: 40 },
+            { value: 'medium', label: '🌿 中度研究', desc: '均衡选择', cost: 80 },
+            { value: 'heavy', label: '🌳 重度研究', desc: '消耗大，收益高', cost: 140 },
+        ];
+
+        showModal(
+            '🔬 选择研究强度',
+            '研究消耗精力与金钱，全面提升各知识点',
+            options,
+            function(value, cost) {
+                if (state.money < cost) { addLog('❌ 金钱不足！', 'danger'); return; }
+                if (state.hp < 15) { addLog('❌ 精力不足！', 'danger'); return; }
+
+                state.money -= cost;
+                const hpCost = value === 'light' ? 8 : value === 'medium' ? 14 : 22;
+                state.hp = clamp(state.hp - hpCost * state.stressMod, 0, 100);
+                state.morale = clamp(state.morale - (value === 'light' ? 2 : value === 'medium' ? 4 : 6), 0, 100);
+                state.totalResearch++;
+
+                const baseGain = value === 'light' ? Math.floor(Math.random() * 10 + 8) : 
+                                 value === 'medium' ? Math.floor(Math.random() * 18 + 14) : 
+                                 Math.floor(Math.random() * 28 + 20);
+                const gain = Math.floor(baseGain * state.talentBonus * state.focusMod * (1 - (state.distractedMod - 1) * 0.3));
+                
+                for (const k of state.knowledge) {
+                    k.exp += Math.floor(gain / state.knowledge.length);
+                }
+                const extra = Math.floor(Math.random() * 5) + 2;
+                const d = state.knowledge[Math.floor(Math.random() * state.knowledge.length)];
+                d.exp += extra;
+
+                const label = value === 'light' ? '轻度' : value === 'medium' ? '中度' : '重度';
+                addLog(`🔬 ${label}研究 +${gain} 总经验，${d.name} +${extra} (💰-${cost})`, 'knowledge-up');
+
+                if (Math.random() < (value === 'light' ? 0.05 : value === 'medium' ? 0.10 : 0.18)) {
+                    const talent = TALENTS[Math.floor(Math.random() * TALENTS.length)];
+                    if (talent.type === 'good' && !hasTalent(talent.id)) {
+                        if (addTalent(talent.id)) {
+                            addLog(`✨ 研究中觉醒天赋：${talent.name}！`, 'talent');
+                        }
+                    }
+                }
+                advanceTurn();
+            }
+        );
+    }
+
+    // ----- 觉醒天赋（选择天赋） -----
+    function actionAwaken() {
+        if (state.gameOver || state.contestInProgress || !gameStarted) return;
+        if (state.money < 100) { addLog('❌ 金钱不足！需要至少 $100', 'danger'); return; }
+        if (state.hp < 20) { addLog('❌ 精力不足 (需要 ≥20)！', 'danger'); return; }
+
+        // 可用天赋（未拥有的）
+        const available = TALENTS.filter(t => !hasTalent(t.id));
+        if (available.length === 0) {
+            addLog('✨ 你已拥有所有天赋！', 'highlight');
+            return;
+        }
+
+        const options = available.map(t => ({
+            value: t.id,
+            label: t.name,
+            desc: `${t.desc} (${t.type === 'good' ? '✅ 好天赋' : '⚠️ 坏天赋'})`,
+            cost: 100
+        }));
+
+        showModal(
+            '✨ 选择要觉醒的天赋',
+            '每个天赋 $100，成功率 40%，可多次尝试',
+            options,
+            function(value, cost) {
+                if (state.money < cost) { addLog('❌ 金钱不足！', 'danger'); return; }
+                if (state.hp < 20) { addLog('❌ 精力不足！', 'danger'); return; }
+
+                state.money -= cost;
+                state.hp = clamp(state.hp - 8, 0, 100);
+                state.totalAwaken++;
+
+                const success = Math.random() < 0.40;
+                if (success) {
+                    const talent = TALENTS.find(t => t.id === value);
+                    if (addTalent(talent.id)) {
+                        addLog(`✨ 觉醒成功！获得天赋：${talent.name} — ${talent.desc}`, 'talent');
+                    } else {
+                        addLog('⚠️ 觉醒失败，金钱退还 $50', 'danger');
+                        state.money += 50;
+                    }
+                } else {
+                    addLog('💔 觉醒失败... 继续努力！', 'danger');
+                }
+                advanceTurn();
+            }
+        );
+    }
+
+    // ----- 其他行动 -----
     function actionContest() {
         if (state.gameOver || state.contestInProgress || !gameStarted) return;
         const cost = getCost(50);
@@ -656,40 +796,6 @@
             d.exp += learn;
             addLog(`📖 休息时看书 ${d.name} +${learn} 经验`, 'highlight');
         }
-        advanceTurn();
-    }
-
-    function actionResearch() {
-        if (state.gameOver || state.contestInProgress || !gameStarted) return;
-        const cost = getCost(80);
-        if (state.money < cost) { addLog('❌ 金钱不足！', 'danger'); return; }
-        if (state.hp < 15) { addLog('❌ 精力不足！', 'danger'); return; }
-
-        state.money -= cost;
-        state.hp = clamp(state.hp - 12 * state.stressMod, 0, 100);
-        state.morale = clamp(state.morale - 4, 0, 100);
-        state.totalResearch++;
-
-        const baseGain = Math.floor(Math.random() * 15 + 10);
-        const gain = Math.floor(baseGain * state.talentBonus * state.focusMod * (1 - (state.distractedMod - 1) * 0.3));
-        for (const k of state.knowledge) {
-            k.exp += Math.floor(gain / state.knowledge.length);
-        }
-        const extra = Math.floor(Math.random() * 5) + 2;
-        const d = state.knowledge[Math.floor(Math.random() * state.knowledge.length)];
-        d.exp += extra;
-
-        addLog(`🔬 研究 +${gain} 总经验，${d.name} +${extra} (💰-${cost})`, 'knowledge-up');
-
-        if (Math.random() < 0.10) {
-            const talent = getRandomTalent();
-            if (talent.type === 'good' && !hasTalent(talent.id)) {
-                if (addTalent(talent.id)) {
-                    addLog(`✨ 研究中觉醒天赋：${talent.name}！`, 'talent');
-                }
-            }
-        }
-
         advanceTurn();
     }
 
@@ -762,45 +868,6 @@
         });
     }
 
-    function actionAwaken() {
-        if (state.gameOver || state.contestInProgress || !gameStarted) return;
-        if (state.money < 100) { addLog('❌ 金钱不足！需要 $100', 'danger'); return; }
-        if (state.hp < 20) { addLog('❌ 精力不足 (需要 ≥20)！', 'danger'); return; }
-
-        state.money -= 100;
-        state.hp = clamp(state.hp - 8, 0, 100);
-        state.totalAwaken++;
-
-        const success = Math.random() < 0.40;
-        if (success) {
-            const talent = getRandomTalent();
-            if (talent.type === 'good' && !hasTalent(talent.id)) {
-                if (addTalent(talent.id)) {
-                    addLog(`✨ 觉醒成功！获得天赋：${talent.name} — ${talent.desc}`, 'talent');
-                } else {
-                    addLog('⚠️ 已有该天赋，觉醒失败，金钱退还 $50', 'danger');
-                    state.money += 50;
-                }
-            } else if (talent.type === 'bad' && hasTalent(talent.id)) {
-                removeTalent(talent.id);
-                addLog(`💪 消除了负面天赋：${talent.name}！`, 'success');
-            } else {
-                const goodTalents = TALENTS.filter(t => t.type === 'good');
-                const t = goodTalents[Math.floor(Math.random() * goodTalents.length)];
-                if (!hasTalent(t.id)) {
-                    addTalent(t.id);
-                    addLog(`✨ 觉醒成功！获得天赋：${t.name} — ${t.desc}`, 'talent');
-                } else {
-                    addLog('⚠️ 已有该天赋，觉醒失败，金钱退还 $50', 'danger');
-                    state.money += 50;
-                }
-            }
-        } else {
-            addLog('💔 觉醒失败... 继续努力！', 'danger');
-        }
-        advanceTurn();
-    }
-
     // ============================================================
     //  16. 回合推进
     // ============================================================
@@ -844,6 +911,7 @@
             return;
         }
 
+        // 特殊事件（随机）
         if (state.turn % 4 === 0 && !state.gameOver && gameStarted) {
             const event = triggerSpecialEvent();
             if (event) {
@@ -852,10 +920,12 @@
             updateUI();
         }
 
+        // 彩蛋检查
         if (state.turn % 3 === 0 && !state.gameOver && gameStarted) {
             checkEasterEgg();
         }
 
+        // 赛季事件提醒
         if (!state.gameOver && gameStarted) {
             const upcoming = getCurrentSeasonEvents(state.turn, state.year);
             if (upcoming.length > 0 && !state.triggeredEvents.has(state.turn)) {
@@ -872,7 +942,51 @@
     }
 
     // ============================================================
-    //  17. 重置游戏
+    //  17. 特殊事件
+    // ============================================================
+    const SPECIAL_EVENTS = [
+        { type: 'good', weight: 20, msg: '📚 发现珍贵资料，随机知识 +5', effect: (s) => { const d = s.knowledge[Math.floor(Math.random() * s.knowledge.length)]; d.exp += 5; } },
+        { type: 'good', weight: 15, msg: '💪 体能训练，精力 +12', effect: (s) => { s.hp = clamp(s.hp + 12, 0, 100); } },
+        { type: 'good', weight: 15, msg: '🎯 学长分享经验，士气 +10', effect: (s) => { s.morale = clamp(s.morale + 10, 0, 100); } },
+        { type: 'good', weight: 10, msg: '🌟 天赋觉醒！获得随机天赋', effect: (s) => { 
+            const talent = TALENTS[Math.floor(Math.random() * TALENTS.length)];
+            if (talent.type === 'good' && !hasTalent(talent.id)) {
+                if (addTalent(talent.id)) {
+                    addLog(`✨ 觉醒天赋：${talent.name} — ${talent.desc}`, 'talent');
+                }
+            }
+        }},
+        { type: 'good', weight: 8, msg: '💎 捡到钱袋，金钱 +80', effect: (s) => { s.money += 80; } },
+        { type: 'bad', weight: 20, msg: '😷 感冒了，精力 -8', effect: (s) => { s.hp = clamp(s.hp - 8, 0, 100); } },
+        { type: 'bad', weight: 15, msg: '😤 被老师批评，士气 -10', effect: (s) => { s.morale = clamp(s.morale - 10, 0, 100); } },
+        { type: 'bad', weight: 12, msg: '📉 遇到难题，随机知识 -3', effect: (s) => { const d = s.knowledge[Math.floor(Math.random() * s.knowledge.length)]; d.exp = Math.max(0, d.exp - 3); } },
+        { type: 'bad', weight: 10, msg: '💤 睡眠不足，精力 -5，士气 -5', effect: (s) => { s.hp = clamp(s.hp - 5, 0, 100); s.morale = clamp(s.morale - 5, 0, 100); } },
+        { type: 'bad', weight: 8, msg: '🌀 天赋消除！失去一个随机天赋', effect: (s) => {
+            const goodTalents = state.talents.filter(t => t.type === 'good');
+            if (goodTalents.length > 0) {
+                const t = goodTalents[Math.floor(Math.random() * goodTalents.length)];
+                removeTalent(t.id);
+                addLog(`💔 失去天赋：${t.name}`, 'danger');
+            }
+        }},
+        { type: 'mixed', weight: 12, msg: '⚖️ 精力 -3，随机知识 +4', effect: (s) => { s.hp = clamp(s.hp - 3, 0, 100); const d = s.knowledge[Math.floor(Math.random() * s.knowledge.length)]; d.exp += 4; } },
+        { type: 'mixed', weight: 8, msg: '🎭 心情波动：士气 -5，金钱 +50', effect: (s) => { s.morale = clamp(s.morale - 5, 0, 100); s.money += 50; } },
+    ];
+
+    let eventPool = [];
+    SPECIAL_EVENTS.forEach(e => {
+        for (let i = 0; i < e.weight; i++) eventPool.push(e);
+    });
+
+    function triggerSpecialEvent() {
+        if (Math.random() > 0.22) return null;
+        const event = eventPool[Math.floor(Math.random() * eventPool.length)];
+        event.effect(state);
+        return event;
+    }
+
+    // ============================================================
+    //  18. 重置游戏
     // ============================================================
     function resetGame() {
         state.hp = 100;
@@ -903,7 +1017,6 @@
         state.triggeredEvents = new Set();
         state.contestInProgress = false;
         state.easterEggs = [];
-        state.trainTarget = 0;
 
         logArea.innerHTML = '';
         gameOverMsg.style.display = 'none';
@@ -918,7 +1031,7 @@
     }
 
     // ============================================================
-    //  18. 初始化
+    //  19. 初始化
     // ============================================================
     function init() {
         trainBtn.addEventListener('click', actionTrain);
@@ -937,11 +1050,11 @@
             state.gameOver = false;
 
             logArea.innerHTML = '';
-            addLog('🧑‍💻 OI 生涯 · 天赋与金钱系统', 'highlight');
+            addLog('🧑‍💻 OI 生涯模拟器 v2.0', 'highlight');
             addLog('⏱️ 55 回合 (约 12-15 分钟)');
-            addLog('💰 训练、比赛、研究需要消耗金钱');
-            addLog('✨ 觉醒天赋需要 $100，成功率 40%');
-            addLog('🎯 训练中也可能随机觉醒或消除天赋！');
+            addLog('📖 训练可选择题目针对性提升');
+            addLog('🔬 科研分轻/中/重度，消耗不同');
+            addLog('✨ 觉醒可选择天赋，每个 $100，成功率 40%');
 
             [trainBtn, contestBtn, restBtn, researchBtn, socialBtn, specialBtn, awakenBtn].forEach(btn => {
                 btn.disabled = false;
