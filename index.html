@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OI生涯模拟器</title>
+    <title>OI生涯模拟器 · 竞速线</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -13,7 +13,7 @@
     <div class="menu-overlay" id="menuOverlay">
         <div class="menu-box">
             <h2>🧑‍💻 OI 生涯模拟器</h2>
-            <p>模拟高中三年信息学竞赛生涯<br>知识强度 · 天赋系统 · 金钱系统 · 多结局</p>
+            <p>竞速线 · 省级选择 · 文化课双线结局</p>
 
             <!-- 难度选择 -->
             <div class="menu-section">
@@ -22,6 +22,19 @@
                     <div class="menu-option" data-value="easy">🌱 简单</div>
                     <div class="menu-option selected" data-value="normal">⚡ 普通</div>
                     <div class="menu-option" data-value="hard">🔥 困难</div>
+                    <div class="menu-option hell" data-value="hell">💀 地狱</div>
+                </div>
+            </div>
+
+            <!-- 省份选择 -->
+            <div class="menu-section">
+                <div class="menu-label">🗺️ 选择省份</div>
+                <div class="menu-options" id="provinceOptions">
+                    <div class="menu-option selected" data-value="zhejiang">🌊 浙江</div>
+                    <div class="menu-option" data-value="guangdong">🏖️ 广东</div>
+                    <div class="menu-option" data-value="beijing">🏛️ 北京</div>
+                    <div class="menu-option" data-value="sichuan">🏔️ 四川</div>
+                    <div class="menu-option" data-value="shanghai">🌆 上海</div>
                 </div>
             </div>
 
@@ -33,6 +46,17 @@
                     <div class="menu-option" data-value="thinker">🧠 思维大师</div>
                     <div class="menu-option" data-value="balanced">⚖️ 均衡选手</div>
                     <div class="menu-option" data-value="lucky">🍀 幸运儿</div>
+                </div>
+            </div>
+
+            <!-- 省份详情 -->
+            <div class="character-detail" id="provinceDetail">
+                <div class="detail-name">🌊 浙江</div>
+                <div class="detail-desc">竞赛强省，资源丰富但竞争激烈</div>
+                <div class="detail-stats">
+                    <span>💰 金钱加成: +30%</span>
+                    <span>⚔️ 比赛难度: +20%</span>
+                    <span>📚 文化课加成: +10%</span>
                 </div>
             </div>
 
@@ -52,7 +76,7 @@
     </div>
 
     <h1>
-        🧑‍💻 OI 生涯模拟器
+        🧑‍💻 OI 生涯模拟器 · 竞速线
         <small>高一 → 高三</small>
         <button class="theme-toggle" id="themeToggle" title="切换明暗主题">🌓</button>
     </h1>
@@ -63,6 +87,8 @@
         <div class="stat"><span class="label">🏅</span> <span id="medalDisplay">0</span></div>
         <div class="stat"><span class="label">💪</span> <span id="moraleDisplay">80</span></div>
         <div class="stat"><span class="label">📊</span> <span id="avgLevelDisplay">E</span></div>
+        <div class="stat"><span class="label">🏆</span> <span id="stageDisplay">CSP</span></div>
+        <div class="stat"><span class="label">📈</span> <span id="failStackDisplay">0</span></div>
         <div class="year-badge" id="yearDisplay">高一</div>
         <div class="season-indicator" id="seasonDisplay">📅 赛季 · 待定</div>
     </div>
@@ -73,11 +99,11 @@
     <div class="main-area">
         <div class="action-grid">
             <button class="action-btn btn-train" id="trainBtn">📖 训练 <span class="sub">选择题目针对性提升</span></button>
-            <button class="action-btn btn-contest" id="contestBtn">⚔️ 比赛 <span class="sub">综合实力比拼 ($50)</span></button>
+            <button class="action-btn btn-contest" id="contestBtn">⚔️ 比赛 <span class="sub">竞速晋级赛 ($50)</span></button>
             <button class="action-btn btn-rest" id="restBtn">😴 休息 <span class="sub">恢复精力 & 士气</span></button>
             <button class="action-btn btn-research" id="researchBtn">🔬 科研 <span class="sub">轻/中/重度研究</span></button>
             <button class="action-btn btn-social" id="socialBtn">🤝 社交 <span class="sub">提升士气 · 少量知识 ($40)</span></button>
-            <button class="action-btn btn-special" id="specialBtn">🏆 赛季大赛 <span class="sub">CSP / NOIP / 省选 / NOI</span></button>
+            <button class="action-btn btn-study" id="studyBtn">📝 文化课 <span class="sub">提升文化课知识</span></button>
             <button class="action-btn btn-awaken" id="awakenBtn">✨ 觉醒天赋 <span class="sub">多选 · 每个$100 · 40%</span></button>
             <button class="action-btn btn-reset" id="resetBtn">🔄 重新开始</button>
         </div>
@@ -99,9 +125,9 @@
         </div>
 
         <div class="log-area" id="logArea">
-            <p>🌟 欢迎来到 OI 生涯模拟器</p>
-            <p>📌 训练可选择题目针对性提升知识点</p>
-            <p>⚡ 科研分轻/中/重度，觉醒可多选天赋！</p>
+            <p>🌟 欢迎来到 OI 生涯模拟器 · 竞速线</p>
+            <p>🏆 竞速晋级：CSP → NOIP → 省选 → NOI → 国家队</p>
+            <p>📝 文化课达到 S 级可触发文化课结局</p>
         </div>
 
         <!-- 模态框容器 -->

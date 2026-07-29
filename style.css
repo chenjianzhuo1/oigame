@@ -36,8 +36,8 @@ body.light .btn-contest { background: #d0b8d8; border-color: #b080b0; }
 body.light .btn-rest { background: #aad0b8; border-color: #70a080; }
 body.light .btn-research { background: #b8d0a8; border-color: #80a068; }
 body.light .btn-social { background: #d8c8a8; border-color: #b09870; }
+body.light .btn-study { background: #c8d0a8; border-color: #90a070; }
 body.light .btn-reset { background: #d0b8b8; border-color: #b08080; }
-body.light .btn-special { background: #c8b0d8; border-color: #a080b8; }
 body.light .btn-awaken { background: #d4c060; border-color: #b09840; color: #1a2a1a; }
 body.light .log-area { background: #e0ecf4; border-color: #b0c8d8; color: #1a3a4a; }
 body.light .log-area p { border-bottom-color: #c0d4e0; }
@@ -69,6 +69,9 @@ body.light .menu-option:hover { background: #d0e0ec; border-color: #8ab0c8; }
 body.light .menu-option.selected { background: #4a8aaa; color: #fff; border-color: #4a8aaa; }
 body.light .character-detail { background: #e0ecf4; border-color: #b0c8d8; }
 body.light .detail-stats span { background: rgba(0,0,0,0.06); }
+body.light .menu-option.hell { color: #cc3333; border-color: #cc3333; }
+body.light .menu-option.hell.selected { background: #cc3333; color: #fff; }
+body.light .menu-option.hell:hover { background: #ff4444; color: #fff; }
 
 body.dark {
     background: #0b1a2e;
@@ -91,8 +94,8 @@ body.dark .btn-contest { background: #5a3f5e; border-color: #b07fb0; }
 body.dark .btn-rest { background: #2f5a4a; border-color: #4f9e7a; }
 body.dark .btn-research { background: #3d5a3a; border-color: #7aaa6a; }
 body.dark .btn-social { background: #5a4a3a; border-color: #b08a5a; }
+body.dark .btn-study { background: #4a5a3a; border-color: #6a8a5a; }
 body.dark .btn-reset { background: #493a3a; border-color: #a06a6a; }
-body.dark .btn-special { background: #5a3a5a; border-color: #b07ab0; }
 body.dark .btn-awaken { background: #8a7a30; border-color: #b09840; color: #f5f1d7; }
 body.dark .log-area { background: #08212b; border-color: #2e5468; color: #cfe2ed; }
 body.dark .log-area p { border-bottom-color: #1a3f50; }
@@ -124,9 +127,12 @@ body.dark .menu-option:hover { background: #1a3a4a; border-color: #4a7a8a; }
 body.dark .menu-option.selected { background: #3a7a9a; color: #fff; border-color: #3a7a9a; }
 body.dark .character-detail { background: #0d212f; border-color: #2f556b; }
 body.dark .detail-stats span { background: rgba(255,255,255,0.06); }
+body.dark .menu-option.hell { color: #ff4444; border-color: #ff4444; }
+body.dark .menu-option.hell.selected { background: #ff4444; color: #fff; border-color: #ff4444; }
+body.dark .menu-option.hell:hover { background: #ff6666; color: #fff; }
 
 .game-container {
-    max-width: 960px;
+    max-width: 980px;
     width: 100%;
     border-radius: 48px 48px 32px 32px;
     padding: 24px 20px 28px;
@@ -137,7 +143,7 @@ body.dark .detail-stats span { background: rgba(255,255,255,0.06); }
 h1 {
     font-weight: 500;
     letter-spacing: 2px;
-    font-size: 26px;
+    font-size: 24px;
     display: flex;
     align-items: center;
     gap: 12px;
@@ -146,7 +152,7 @@ h1 {
     transition: color 0.3s;
 }
 h1 small {
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 300;
     padding: 4px 14px;
     border-radius: 40px;
@@ -187,40 +193,40 @@ h1 small {
 }
 .menu-box {
     border-radius: 40px;
-    padding: 32px 40px;
-    max-width: 520px;
+    padding: 28px 36px;
+    max-width: 540px;
     width: 92%;
     text-align: center;
     box-shadow: 0 30px 60px rgba(0,0,0,0.6);
     border: 1px solid rgba(120, 180, 255, 0.15);
     transition: background 0.4s, border-color 0.4s;
-    max-height: 90vh;
+    max-height: 92vh;
     overflow-y: auto;
 }
-.menu-box h2 { font-size: 30px; margin-bottom: 4px; transition: color 0.3s; }
-.menu-box p { font-size: 14px; margin-bottom: 16px; line-height: 1.6; transition: color 0.3s; }
+.menu-box h2 { font-size: 28px; margin-bottom: 4px; transition: color 0.3s; }
+.menu-box p { font-size: 14px; margin-bottom: 14px; line-height: 1.6; transition: color 0.3s; }
 
 .menu-section {
-    margin: 12px 0;
+    margin: 10px 0;
     text-align: left;
 }
 .menu-label {
     font-size: 13px;
     font-weight: 600;
-    margin-bottom: 6px;
+    margin-bottom: 5px;
     opacity: 0.8;
 }
 .menu-options {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
+    gap: 5px;
 }
 .menu-option {
-    padding: 6px 16px;
+    padding: 5px 14px;
     border-radius: 30px;
     border: 2px solid;
     cursor: pointer;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 500;
     transition: all 0.2s;
     user-select: none;
@@ -229,31 +235,31 @@ h1 small {
 .menu-option.selected { transform: scale(1.02); }
 
 .character-detail {
-    margin: 10px 0 14px;
-    padding: 10px 14px;
-    border-radius: 16px;
+    margin: 8px 0 10px;
+    padding: 8px 12px;
+    border-radius: 14px;
     border: 1px solid;
     text-align: left;
     transition: background 0.3s, border-color 0.3s;
 }
 .character-detail .detail-name {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 600;
     margin-bottom: 2px;
 }
 .character-detail .detail-desc {
-    font-size: 13px;
+    font-size: 12px;
     opacity: 0.8;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
 }
 .character-detail .detail-stats {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
+    gap: 4px;
 }
 .character-detail .detail-stats span {
-    font-size: 12px;
-    padding: 2px 10px;
+    font-size: 11px;
+    padding: 2px 8px;
     border-radius: 20px;
     transition: background 0.3s;
 }
@@ -274,54 +280,54 @@ h1 small {
 
 .status-panel {
     border-radius: 60px;
-    padding: 10px 16px;
+    padding: 8px 14px;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    margin: 12px 0 8px;
+    margin: 10px 0 6px;
     box-shadow: inset 0 4px 8px rgba(0,0,0,0.15), 0 4px 6px rgba(0,0,0,0.1);
-    gap: 4px 8px;
+    gap: 3px 6px;
     transition: background 0.3s, border-color 0.3s;
 }
 .stat {
     display: flex;
     align-items: baseline;
-    gap: 3px;
+    gap: 2px;
     font-weight: 400;
     transition: color 0.3s;
-    font-size: 13px;
+    font-size: 12px;
 }
 .stat span {
     font-weight: 600;
-    font-size: 17px;
-    min-width: 1.6rem;
+    font-size: 16px;
+    min-width: 1.4rem;
     text-align: center;
     transition: color 0.3s;
 }
-.stat .label { font-size: 11px; font-weight: 300; }
+.stat .label { font-size: 10px; font-weight: 300; }
 .year-badge {
-    padding: 3px 12px;
+    padding: 2px 10px;
     border-radius: 60px;
     font-weight: 600;
-    font-size: 15px;
+    font-size: 14px;
     letter-spacing: 1px;
     transition: background 0.3s, color 0.3s;
 }
 .season-indicator {
-    padding: 3px 10px;
+    padding: 2px 8px;
     border-radius: 30px;
     font-weight: 500;
-    font-size: 12px;
+    font-size: 11px;
     transition: background 0.3s, color 0.3s, border-color 0.3s;
 }
 
 .talent-display {
-    padding: 6px 14px;
+    padding: 5px 12px;
     border-radius: 30px;
-    margin: 4px 0 8px;
+    margin: 3px 0 6px;
     border: 1px solid;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 500;
     text-align: center;
     transition: background 0.3s, border-color 0.3s;
@@ -329,7 +335,7 @@ h1 small {
 
 .main-area {
     border-radius: 32px;
-    padding: 16px 12px 12px;
+    padding: 14px 10px 10px;
     transition: background 0.3s, box-shadow 0.3s;
     position: relative;
 }
@@ -337,14 +343,14 @@ h1 small {
 .action-grid {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr;
-    gap: 6px;
-    margin: 8px 0 8px;
+    gap: 5px;
+    margin: 6px 0 6px;
 }
 .action-btn {
     border: none;
     border-radius: 40px;
-    padding: 10px 4px;
-    font-size: 13px;
+    padding: 8px 3px;
+    font-size: 12px;
     font-weight: 600;
     box-shadow: 0 4px 0 #0c202b;
     transition: 0.08s linear, background 0.3s, color 0.3s, box-shadow 0.3s;
@@ -363,25 +369,16 @@ h1 small {
     pointer-events: none;
     filter: grayscale(0.3);
 }
-.action-btn .sub { font-weight: 300; font-size: 9px; transition: color 0.3s; }
+.action-btn .sub { font-weight: 300; font-size: 8px; transition: color 0.3s; }
 .btn-reset { grid-column: span 4; }
-.btn-special { grid-column: span 1; }
-.btn-awaken { grid-column: span 1; }
-.btn-special:not(:disabled) { animation: pulse-glow 1.8s infinite; }
-
-@keyframes pulse-glow {
-    0% { box-shadow: 0 4px 0 #0c202b, 0 0 0 0 rgba(180, 120, 255, 0.3); }
-    50% { box-shadow: 0 4px 0 #0c202b, 0 0 16px 3px rgba(180, 120, 255, 0.5); }
-    100% { box-shadow: 0 4px 0 #0c202b, 0 0 0 0 rgba(180, 120, 255, 0.3); }
-}
 
 .info-panel {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin: 8px 0 6px;
-    padding: 8px 12px;
-    border-radius: 16px;
+    gap: 8px;
+    margin: 6px 0 4px;
+    padding: 6px 10px;
+    border-radius: 14px;
     transition: background 0.3s;
 }
 .info-column {
@@ -390,7 +387,7 @@ h1 small {
     gap: 2px;
 }
 .info-title {
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
     margin-bottom: 2px;
     transition: color 0.3s;
@@ -398,22 +395,22 @@ h1 small {
 .knowledge-list, .talent-list {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 1px;
 }
 .knowledge-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 2px 8px;
-    border-radius: 8px;
-    font-size: 12px;
+    padding: 2px 6px;
+    border-radius: 6px;
+    font-size: 11px;
     font-weight: 500;
     transition: background 0.3s;
 }
 .knowledge-item .kname { transition: color 0.3s; }
 .knowledge-item .klevel {
     font-weight: 700;
-    font-size: 12px;
+    font-size: 11px;
     padding: 0 2px;
 }
 .level-E { color: #8a8a8a; }
@@ -439,35 +436,35 @@ h1 small {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 2px 8px;
-    border-radius: 8px;
-    font-size: 12px;
+    padding: 2px 6px;
+    border-radius: 6px;
+    font-size: 11px;
     font-weight: 500;
     transition: background 0.3s;
 }
 .talent-item .tname { transition: color 0.3s; }
 .talent-item .ttype {
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 400;
     opacity: 0.7;
 }
 .talent-item .ttype.good { color: #8bf7b0; }
 .talent-item .ttype.bad { color: #f78b8b; }
 .talent-empty {
-    font-size: 12px;
+    font-size: 11px;
     opacity: 0.6;
-    padding: 4px 8px;
+    padding: 3px 6px;
     transition: color 0.3s;
 }
 
 .log-area {
-    border-radius: 20px;
-    padding: 8px 12px;
-    margin: 8px 0 6px;
-    min-height: 80px;
-    max-height: 120px;
+    border-radius: 18px;
+    padding: 6px 10px;
+    margin: 6px 0 4px;
+    min-height: 60px;
+    max-height: 100px;
     overflow-y: auto;
-    font-size: 12px;
+    font-size: 11px;
     line-height: 1.5;
     box-shadow: inset 0 4px 8px rgba(0,0,0,0.2);
     scroll-behavior: smooth;
@@ -481,13 +478,17 @@ h1 small {
 .log-area .talent { color: #ffd866; font-weight: 600; }
 .log-area .money { color: #7ec8e3; font-weight: 500; }
 .log-area .easter-egg { color: #ff6b9d; font-weight: 600; }
+.log-area .stage { color: #ffaa4a; font-weight: 700; }
+.log-area .ending { color: #ff6b6b; font-weight: 700; }
+.log-area .hell { color: #ff3333; font-weight: 700; }
+.log-area .stack { color: #ff8844; font-weight: 600; }
 
 .game-over-msg {
     border-radius: 40px;
     padding: 10px 16px;
     text-align: center;
     font-weight: 500;
-    margin: 8px 0 0;
+    margin: 6px 0 0;
     font-size: 14px;
     transition: background 0.3s, border-color 0.3s, color 0.3s;
 }
@@ -497,13 +498,12 @@ h1 small {
 .footer-hint {
     display: flex;
     justify-content: space-between;
-    font-size: 11px;
-    margin-top: 8px;
+    font-size: 10px;
+    margin-top: 6px;
     padding: 0 4px;
     transition: color 0.3s;
 }
 
-/* ===== 模态框 ===== */
 .modal-overlay {
     position: absolute;
     top: 0;
@@ -525,8 +525,8 @@ h1 small {
 }
 .modal-content {
     border-radius: 32px;
-    padding: 24px 28px;
-    max-width: 540px;
+    padding: 20px 24px;
+    max-width: 520px;
     width: 92%;
     max-height: 80vh;
     overflow-y: auto;
@@ -534,19 +534,19 @@ h1 small {
     transition: background 0.3s, color 0.3s;
 }
 .modal-title {
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 600;
     margin-bottom: 4px;
 }
 .modal-subtitle {
-    font-size: 14px;
+    font-size: 13px;
     opacity: 0.7;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
 }
 .modal-close {
     float: right;
     border: none;
-    font-size: 20px;
+    font-size: 18px;
     cursor: pointer;
     padding: 0 8px;
     border-radius: 50%;
@@ -555,50 +555,50 @@ h1 small {
 .modal-options {
     display: flex;
     flex-direction: column;
-    gap: 5px;
-    margin: 8px 0;
-    max-height: 300px;
+    gap: 4px;
+    margin: 6px 0;
+    max-height: 260px;
     overflow-y: auto;
 }
 .modal-option {
-    padding: 6px 12px;
+    padding: 5px 10px;
     border-radius: 10px;
     border: 2px solid;
     cursor: pointer;
     transition: background 0.3s, border-color 0.3s;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 500;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
-.modal-option .desc { font-weight: 400; font-size: 11px; opacity: 0.7; }
-.modal-option .cost { font-weight: 600; font-size: 12px; }
+.modal-option .desc { font-weight: 400; font-size: 10px; opacity: 0.7; }
+.modal-option .cost { font-weight: 600; font-size: 11px; }
 .modal-option .check { display: none; color: #4a8aaa; }
 .modal-option.selected .check { display: inline; }
-.modal-option .badge { font-size: 10px; padding: 1px 8px; border-radius: 20px; }
+.modal-option .badge { font-size: 9px; padding: 1px 6px; border-radius: 20px; }
 .modal-option .badge.good { background: rgba(139, 247, 176, 0.2); color: #8bf7b0; }
 .modal-option .badge.bad { background: rgba(247, 139, 139, 0.2); color: #f78b8b; }
 .modal-actions {
     display: flex;
-    gap: 10px;
-    margin-top: 12px;
+    gap: 8px;
+    margin-top: 10px;
     justify-content: flex-end;
 }
 .modal-submit {
     border: none;
-    padding: 10px 32px;
+    padding: 8px 28px;
     border-radius: 40px;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 600;
     cursor: pointer;
     transition: background 0.3s;
 }
 .modal-cancel {
     border: none;
-    padding: 10px 24px;
+    padding: 8px 20px;
     border-radius: 40px;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 500;
     cursor: pointer;
     background: transparent;
@@ -615,27 +615,25 @@ body.dark ::-webkit-scrollbar { background: #12303e; }
 body.dark ::-webkit-scrollbar-thumb { background: #4d7b92; }
 
 @media (max-width: 750px) {
-    .game-container { padding: 12px; }
-    .action-grid { grid-template-columns: 1fr 1fr; gap: 5px; }
+    .game-container { padding: 10px; }
+    .action-grid { grid-template-columns: 1fr 1fr; gap: 4px; }
     .btn-reset { grid-column: span 2; }
-    .btn-special { grid-column: span 1; }
-    .btn-awaken { grid-column: span 1; }
-    .action-btn { font-size: 11px; padding: 8px 4px; }
-    .action-btn .sub { font-size: 8px; }
-    h1 { font-size: 18px; }
-    h1 small { font-size: 12px; padding: 2px 10px; }
-    .year-badge { font-size: 13px; padding: 2px 10px; }
-    .menu-box { padding: 20px 16px; }
-    .menu-box h2 { font-size: 22px; }
-    .stat { font-size: 11px; }
-    .stat span { font-size: 14px; min-width: 1.2rem; }
-    .status-panel { padding: 6px 10px; gap: 2px 5px; }
-    .info-panel { grid-template-columns: 1fr; gap: 6px; padding: 6px 8px; }
-    .knowledge-item, .talent-item { font-size: 11px; padding: 2px 6px; }
-    .log-area { min-height: 60px; max-height: 100px; font-size: 11px; padding: 6px 10px; }
-    .modal-content { padding: 16px 14px; max-width: 95%; }
-    .modal-title { font-size: 17px; }
-    .menu-option { font-size: 12px; padding: 4px 12px; }
-    .character-detail { padding: 8px 10px; }
-    .character-detail .detail-stats span { font-size: 11px; }
+    .action-btn { font-size: 10px; padding: 6px 3px; }
+    .action-btn .sub { font-size: 7px; }
+    h1 { font-size: 16px; }
+    h1 small { font-size: 11px; padding: 2px 8px; }
+    .year-badge { font-size: 12px; padding: 2px 8px; }
+    .menu-box { padding: 16px 14px; }
+    .menu-box h2 { font-size: 20px; }
+    .stat { font-size: 10px; }
+    .stat span { font-size: 13px; min-width: 1.1rem; }
+    .status-panel { padding: 5px 8px; gap: 2px 4px; }
+    .info-panel { grid-template-columns: 1fr; gap: 4px; padding: 4px 6px; }
+    .knowledge-item, .talent-item { font-size: 10px; padding: 2px 4px; }
+    .log-area { min-height: 50px; max-height: 80px; font-size: 10px; padding: 4px 8px; }
+    .modal-content { padding: 14px 12px; max-width: 95%; }
+    .modal-title { font-size: 16px; }
+    .menu-option { font-size: 11px; padding: 3px 10px; }
+    .character-detail { padding: 6px 8px; }
+    .character-detail .detail-stats span { font-size: 10px; }
 }
